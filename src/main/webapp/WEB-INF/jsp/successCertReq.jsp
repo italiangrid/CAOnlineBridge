@@ -24,12 +24,8 @@
 							<strong>SUCCESS</strong>
 						</h3>
 
-						Now you have a proxy certificate valid for 1 year.<br/>	
-						Your Virtual Organization is "vomstest".
+						Download your proxy <a href="#">here</a>.
 						
-						<p/>
-						
-						Close this pop up window with the red button in the top right corner.
 					</div>
 				</div>
 			</div>
@@ -37,7 +33,7 @@
 		<%@ include file="/WEB-INF/jsp/rightMenu.jsp"%>
 
 		<%@ include file="/WEB-INF/jsp/footer.jsp"%>
-		
+	
 	</div>
 </body>
 </html>

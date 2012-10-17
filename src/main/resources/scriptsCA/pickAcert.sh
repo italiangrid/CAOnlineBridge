@@ -11,7 +11,7 @@ utilPath="/usr/bin/"
 #certCAName="CA Administrator of Instance pki-ca's IGI Domain ID"
 #certCAName="RA Administrator's IGI Domain ID"
 certCAName="CA Administrator of Instance pki-ca's Cnaf Domain ID"
-certCApath="/var/lib/tomcat6/webapps/CAOnlineBridge/WEB-INF/classes/scriptsCA"
+certCApath="/opt/apache-tomcat-7.0.29/webapps/CAOnlineBridge/WEB-INF/classes/scriptsCA"
 #
 # Useful functions
 #

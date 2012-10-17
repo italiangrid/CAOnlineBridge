@@ -1,9 +1,15 @@
 package it.italiangrid.caonline.controller;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.Security;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.netscape.NetscapeCertRequest;
+import org.bouncycastle.util.encoders.Base64;
 import org.glite.security.util.DNHandler;
 import org.globus.gsi.GlobusCredential;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,15 +73,11 @@ public class HomeController {
 	 * 
 	 * @param request - the request of the session.
 	 * @param model - passing a {@link CertificateRequest} initialized with the Shibboleth headers value.
-	 * @return the home.jsp if receive two valid token from the portal or the home2.jsp if don't receive the tokens
+	 * @return the home.jsp if receive two valid token from the portal or the certReq.jsp if don't receive the tokens
 	 */
 	@RequestMapping(value="/home")
 	public String showHome(HttpServletRequest request, Model model) {
 		log.info("Home controller");
-		
-		//model.addAttribute("certificateRequest", new CertificateRequest(request.getHeader("mail"),request.getHeader("cn"),request.getHeader("l"),request.getHeader("o"), null, null));
-		//model.addAttribute("certificateRequest", new CertificateRequest("dmichelotto@fe.infn.it","Diego Michelotto", "CNAF", "Istituto Nazionale di Fisica Nucleare", null, null));
-		
 		if((request.getParameter("t1")!=null)&&(request.getParameter("t2")!=null)){
 			
 			log.info("Token Validation");
@@ -86,7 +88,6 @@ public class HomeController {
 			log.info("Received t1: " + token1 + " & t2: " + token2);
 			
 			String userSecret = request.getHeader("mail");
-			//String userSecret = "dmichelotto@fe.infn.it";
 			
 			String verifyToken = TokenCreator.getToken(userSecret);
 			log.info("Created token: " + verifyToken);
@@ -98,7 +99,7 @@ public class HomeController {
 				return "error";
 		}
 		model.addAttribute("certificateRequest", new CertificateRequest(request.getHeader("mail"),request.getHeader("cn"),request.getHeader("l"),request.getHeader("o"), NOPASSWORD, NOPASSWORD));
-		return "home2";
+		return "certReq";
 	}
 	
 	/**
@@ -203,23 +204,52 @@ public class HomeController {
 	 * @param result - validating the {@link CertificateRequest} in result there are the errors. 
 	 * @param model - getting the model from the request.
 	 * @return the success page if all is OK or return to the form page if some problem are occurred.
+	 * @throws IOException 
 	 */
-	@RequestMapping(value = "/home2/certReq", method = RequestMethod.POST)
-    public String createCertificate(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model) {
+	@RequestMapping(value = "/certReq/certReq", method = RequestMethod.POST)
+    public String createCertificate(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model, HttpServletRequest request) throws IOException {
 		log.info("Received request of new Certificate");
 		
 		if (result.hasErrors()) {
 			model.addAttribute("certificateRequest", certificateRequest);
 			log.info("Not valid request");
-			return "home2";
+			return "certReq";
 			
 		} else {
 			
-			log.info("Received: \n" + certificateRequest.toString());
+			log.info("Received from certReq: \n" + certificateRequest.toString());
+			log.info("keygen: " + request.getParameter("spkac"));
+			log.info("keygen: " + Base64.decode(request.getParameter("spkac")).hashCode());
+			
+			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			
+			NetscapeCertRequest req = new NetscapeCertRequest(Base64.decode(request.getParameter("spkac")));
+			
+			PublicKey pubKey = req.getPublicKey();
+			
+			log.info("Pubkey: " + pubKey.toString());
+			
+			/*byte[] bytes = pubKey.getEncoded();
+			
+			FileOutputStream keyfos = new FileOutputStream("/root/testReq.csr");
+			keyfos.write(bytes);
+			keyfos.close();
+			
+			String print = "";
+			
+			for (byte b : bytes) {
+				print += b;
+			}
+			
+			log.info("request: "  + print);*/
+			
+			/*
+			 * new NetscapeCertRequest(Base64.decode(spkacData)).getPublicKey()
+			 */
 			
 			
-			
-			return "success";
+			return "successCertReq";
+//			return "certReq";
 		}
 		
 	}

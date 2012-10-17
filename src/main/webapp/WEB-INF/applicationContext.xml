@@ -22,6 +22,8 @@
 	Note that, with Spring 3.0, this tag works in Servlet MVC only!  -->
 	<mvc:annotation-driven /> 
 	
+	<mvc:resources mapping="/resources/**" location="/, classpath:/META-INF/web-resources/" />
+	
 	<!-- Load Hibernate related configuration -->
 	<import resource="hibernate-context.xml" />
 	
