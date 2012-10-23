@@ -13,6 +13,7 @@ import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 
 public class EjbCACertificateRequest {
+	@SuppressWarnings("unused")
 	private String mail;
 	private String username;
 	private String dn;
@@ -65,7 +66,6 @@ public class EjbCACertificateRequest {
 			this.service = ejbcaWsConn.getEjbcaWS();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -98,7 +98,6 @@ public class EjbCACertificateRequest {
 			this.service = ejbcaWsConn.getEjbcaWS();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

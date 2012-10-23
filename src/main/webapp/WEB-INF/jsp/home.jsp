@@ -119,13 +119,13 @@
 
 			<%@ include file="/WEB-INF/jsp/footer.jsp"%>
 		<div id="wrapper">
-		<div id="overlay" style="display:none;"></div>
-		<div  id="popup" style="display:none; left:18%;">
-			<img src="<c:url value='/images/loading.gif'/>" />
+			<div id="overlay" style="display:none;"></div>
+			<div  id="popup" style="display:none; left:18%;">
+				<img src="<c:url value='/images/loading.gif'/>" />
+			</div>
+			
 		</div>
-		
 	</div>
-	
 	
 	
 </body>

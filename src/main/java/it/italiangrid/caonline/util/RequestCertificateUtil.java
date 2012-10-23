@@ -34,7 +34,6 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
-import org.bouncycastle.jce.provider.symmetric.AES.KeyGen;
 import org.bouncycastle.openssl.PEMWriter;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
@@ -64,42 +63,7 @@ public class RequestCertificateUtil {
 	private static final Logger log = Logger
 			.getLogger(RequestCertificateUtil.class);
 	
-//	@Autowired
-//	private CertificateService certificateService;
-//	
-//	@Autowired
-//	private UserInfoService userInfoService;
-	
-//	public static GlobusCredential doRequestAndStore(CertificateRequest certificateRequest, BindingResult result){
-//		
-//		String certPath = getCertificate(certificateRequest, result);
-//		
-//		if(certPath == null){
-//			result.reject("doRequestAndStore.getCertificato", "Certificate not released");
-//			return null;
-//		}
-//		
-//		GlobusCredential globusCredential = putCertificate(certPath, result);
-//		
-//		if(globusCredential == null){
-//			result.reject("doRequestAndStore.putCertificate", "Certificate not stored into MyProxy");
-//			return null;
-//		}
-//		
-////		if(!insertCertificate(globusCredential, certificateRequest.getMail())){
-////			result.reject("doRequestAndStore.putCertificateIntoDB", "Certificate not stored into Portal DB");
-////			return false;
-////		}
-////			
-////		
-//		if(deleteDirectory(new File(certPath))){
-//			result.reject("doRequestAndStore.deleteDirectory", "Temporary directory don't deleted");
-//		}
-//		
-//		return globusCredential;
-//		
-//	}
-//	
+
 	public static String getCertificate(CertificateRequest certificateRequest, BindingResult result){
 		String contextPath = RequestCertificateUtil.class.getClassLoader().getResource("").getPath() + "scriptsCA/";
 		
@@ -170,7 +134,6 @@ public class RequestCertificateUtil {
 	public static GlobusCredential getCredential(CertificateRequest certificateRequest, BindingResult result) throws CertificateException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, NoSuchProviderException, IOException{
 	
 		/*
-		 * TODO
 		 * 1.1 creare coppia chiave privata e pubblica
 		 * 1.2 creare pkcs10
 		 * 2 inviare richiesta a ejbca
@@ -183,7 +146,6 @@ public class RequestCertificateUtil {
 		try {
 			keyGen= KeyPairGenerator.getInstance("RSA");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		
@@ -206,16 +168,12 @@ public class RequestCertificateUtil {
         try {
 			pkcs10 = new PKCS10CertificationRequest(sigAlg, subject, publicKey, attributes, privateKey);
 		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SignatureException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

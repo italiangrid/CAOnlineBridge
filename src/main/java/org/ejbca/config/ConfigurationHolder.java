@@ -168,6 +168,7 @@ public final class ConfigurationHolder {
 	/**
 	 * @return the configuration as a regular Properties object
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Properties getAsProperties() {
 		final Properties properties = new Properties();
 		final Iterator i = instance().getKeys();
@@ -277,6 +278,7 @@ public final class ConfigurationHolder {
 	 * 
 	 * NOTE: This method should only be used by tests through ConfigurationSessionBean!
 	 */
+	@SuppressWarnings("rawtypes")
 	public static boolean updateConfiguration(final Properties properties) {
 		backupConfiguration();	// Only takes a backup if necessary.
 		final Iterator i = properties.keySet().iterator();

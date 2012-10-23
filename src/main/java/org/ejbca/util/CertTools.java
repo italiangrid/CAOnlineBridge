@@ -1183,7 +1183,8 @@ public class CertTools {
      * @throws CertificateException if the byte array does not contain a proper certificate.
      * @throws IOException if the byte array cannot be read.
      */
-    public static Certificate getCertfromByteArray(byte[] cert, String provider)
+    @SuppressWarnings("unused")
+	public static Certificate getCertfromByteArray(byte[] cert, String provider)
         throws CertificateException {
     	/*if (log.isTraceEnabled()) {
     		log.trace(">getCertfromByteArray");
@@ -1357,7 +1358,8 @@ public class CertTools {
     throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, CertificateEncodingException, IllegalStateException, NoSuchProviderException {
     	return genSelfCertForPurpose(dn, validity, policyId, privKey, pubKey, sigAlg, isCA, keyusage, "BC");
     }
-    public static X509Certificate genSelfCertForPurpose(String dn, long validity, String policyId,
+    @SuppressWarnings("resource")
+	public static X509Certificate genSelfCertForPurpose(String dn, long validity, String policyId,
         PrivateKey privKey, PublicKey pubKey, String sigAlg, boolean isCA, int keyusage, String provider)
         throws NoSuchAlgorithmException, SignatureException, InvalidKeyException, CertificateEncodingException, IllegalStateException, NoSuchProviderException {
         // Create self signed certificate
@@ -1462,7 +1464,8 @@ public class CertTools {
      * @return byte[] containing the authority key identifier, or null if it does not exist
      * @throws IOException if extension can not be parsed
      */
-    public static byte[] getAuthorityKeyId(Certificate cert)
+    @SuppressWarnings("resource")
+	public static byte[] getAuthorityKeyId(Certificate cert)
         throws IOException {
     	if (cert == null) {
     		return null;
@@ -1488,7 +1491,8 @@ public class CertTools {
      * @return byte[] containing the subject key identifier, or null if it does not exist
      * @throws IOException if extension can not be parsed
      */
-    public static byte[] getSubjectKeyId(Certificate cert)
+    @SuppressWarnings("resource")
+	public static byte[] getSubjectKeyId(Certificate cert)
         throws IOException {
     	if (cert == null) {
     		return null;
@@ -1514,7 +1518,8 @@ public class CertTools {
      * @return String with the certificate policy OID
      * @throws IOException if extension can not be parsed
      */
-    public static String getCertificatePolicyId(Certificate cert, int pos)
+    @SuppressWarnings("resource")
+	public static String getCertificatePolicyId(Certificate cert, int pos)
         throws IOException {
     	String ret = null;
         if (cert instanceof X509Certificate) {
@@ -1697,7 +1702,8 @@ public class CertTools {
         }
         return null;
     }
-    private static ASN1Sequence getAltnameSequence(byte[] value) throws IOException {
+    @SuppressWarnings("resource")
+	private static ASN1Sequence getAltnameSequence(byte[] value) throws IOException {
         DERObject oct = (new ASN1InputStream(new ByteArrayInputStream(value)).readObject());
         ASN1Sequence seq = ASN1Sequence.getInstance(oct);
         return seq;
@@ -1708,6 +1714,7 @@ public class CertTools {
      * @param ext X509Extension with AlternativeNames
      * @return String as defined in method getSubjectAlternativeName
      */
+	@SuppressWarnings("resource")
 	public static String getAltNameStringFromExtension(X509Extension ext) {
 		String altName = null;
 		//GeneralNames

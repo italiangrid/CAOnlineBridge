@@ -87,7 +87,8 @@ public final class CryptoProviderTools {
         // Also remove the CVC provider
         Security.removeProvider("CVC");
     }
-    public static synchronized void installBCProvider() {
+    @SuppressWarnings("unchecked")
+	public static synchronized void installBCProvider() {
     	// Also install the CVC provider
     	try {
         	Security.addProvider(new CVCProvider());    		

@@ -170,7 +170,8 @@ class FileCertReader {
         return certs;
     }
 
-    public PrivateKey readPrivateKey(String file) throws IOException {
+    @SuppressWarnings("resource")
+	public PrivateKey readPrivateKey(String file) throws IOException {
         File keyfile = new File(file);
 
         BufferedInputStream fis = new BufferedInputStream(new FileInputStream(keyfile));

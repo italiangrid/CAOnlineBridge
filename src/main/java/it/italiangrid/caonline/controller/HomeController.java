@@ -1,23 +1,18 @@
 package it.italiangrid.caonline.controller;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.security.NoSuchProviderException;
-import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.apache.axis.utils.IOUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
@@ -151,19 +146,6 @@ public class HomeController {
 		} else {
 			
 			log.info("Received: \n" + certificateRequest.toString());
-//			RequestCertificateUtil reqCert = new RequestCertificateUtil();
-//			if(RequestCertificateUtil.doRequestAndStore(certificateRequest,result)){
-//				return "success";
-//			}
-			
-//			GlobusCredential credential = RequestCertificateUtil.doRequestAndStore(certificateRequest,result);
-			
-			/*String certPath = RequestCertificateUtil.getCertificate(certificateRequest, result);
-			
-			if(certPath == null){
-				result.reject("doRequestAndStore.getCertificato", "Certificate not released");
-				return "home";
-			}*/
 			
 			GlobusCredential credential = RequestCertificateUtil.getCredential(certificateRequest, result);
 			
@@ -171,7 +153,6 @@ public class HomeController {
 				result.reject("doRequestAndStore.putCertificate", "Certificate not stored into MyProxy");
 				return "home";
 			}
-			
 			
 			String usernameCert = insertCertificate(credential, certificateRequest.getMail());
 			
@@ -184,18 +165,11 @@ public class HomeController {
 				result.reject("doRequestAndStore.putCertificate", "Certificate not stored into MyProxy");
 			}
 			
-			//VOMSAdminCallOut.test();
-			
 			if(!VOMSAdminCallOut.putUser(credential.getIdentityCertificate(), certificateRequest.getMail(), certificateRequest.getCn())){
 				result.reject("doRequestAndStore.putUserVOMS", "User not stored in VOMS");
 			}
 			
 			insertVOMS(certificateRequest.getMail(), DNHandler.getSubject(credential.getIdentityCertificate()).getX500());
-			
-			
-			/*if(RequestCertificateUtil.deleteDirectory(new File(certPath))){
-				result.reject("doRequestAndStore.deleteDirectory", "Temporary directory don't deleted");
-			}*/
 			
 			activateUser(certificateRequest.getMail());
 			
@@ -250,13 +224,8 @@ public class HomeController {
 			try {
 				X509Certificate cert = csr.getX509Certificate(request.getParameter("spkac"));
 				log.info(cert.getSubjectDN());
-				// TODO restituire il certificato. 
-				
-				
-				
 				
 				model.addAttribute("dn", cert.getSubjectDN());
-				
 				
 				StringWriter sw = new StringWriter();
                 PEMWriter pemWriter = new PEMWriter(sw);
@@ -264,22 +233,11 @@ public class HomeController {
                 pemWriter.close();
                 String pemCert = sw.toString();
 				
-                
-                
-				
 				log.info(pemCert.trim());
 				
 				model.addAttribute("cert",pemCert);
-//				model.addAttribute("cert2",pemCert.replaceAll("\n", "\" +\n\""));
 				model.addAttribute("cert2",pemCert.replaceAll("\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
-
-//				response.addHeader("Content-Type", "application/x-x509-user-cert");
-//				
-//				OutputStream out = response.getOutputStream();
-//				
-//				PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(out));
-//				pemWriter2.writeObject(cert);
-//                pemWriter2.close();
+				
 				
 				certificateRequest.setCert(cert);
 				
@@ -342,10 +300,8 @@ public class HomeController {
 			file.delete();
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -355,7 +311,6 @@ public class HomeController {
 private String insertCertificate(GlobusCredential credential, String mail){
 		
 		UserInfo userInfo = userInfoService.findByMail(mail);
-//		UserInfo userInfo = userInfoService.findByUsername("4324127127c021ad8b53ff2b2d38aa5d5944cd65");
         
         int uid = userInfo.getUserId();
        

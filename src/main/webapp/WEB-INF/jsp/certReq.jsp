@@ -41,9 +41,6 @@
 			jQuery("#popup").fadeIn(500); // Displaying popup with fade in animation
 		}
 		
-		
-		</script>
-		
 	</script>
 
 </head>
