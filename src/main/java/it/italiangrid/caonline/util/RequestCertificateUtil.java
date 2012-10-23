@@ -10,16 +10,39 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.SignatureException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.X509Name;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.bouncycastle.jce.provider.symmetric.AES.KeyGen;
+import org.bouncycastle.openssl.PEMWriter;
+import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
+import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.globus.gsi.GSIConstants;
 import org.globus.gsi.GlobusCredential;
 import org.globus.gsi.X509Extension;
@@ -143,7 +166,79 @@ public class RequestCertificateUtil {
 		
 	}
 	
-public static GlobusCredential getCredential(String certPath, BindingResult result){
+	
+	public static GlobusCredential getCredential(CertificateRequest certificateRequest, BindingResult result) throws CertificateException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, NoSuchProviderException, IOException{
+	
+		/*
+		 * TODO
+		 * 1.1 creare coppia chiave privata e pubblica
+		 * 1.2 creare pkcs10
+		 * 2 inviare richiesta a ejbca
+		 * 3 recuperare risposta
+		 * 4 convertire in GlobusCredential
+		 */
+	
+		//1.1
+		KeyPairGenerator keyGen = null;
+		try {
+			keyGen= KeyPairGenerator.getInstance("RSA");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		keyGen.initialize(2048, new SecureRandom());
+		KeyPair keypair = keyGen.generateKeyPair();
+		PublicKey publicKey = keypair.getPublic();
+        PrivateKey privateKey = keypair.getPrivate();
+        
+        //1.2
+        String sigAlg = "SHA1WithRSA";
+        String dn="CN="+certificateRequest.getCn();
+		if(certificateRequest.getL()!=null)
+			dn += " ,OU="+certificateRequest.getL();
+		if(certificateRequest.getO()!=null)
+			dn += " ,O="+certificateRequest.getO();
+		dn += ", O=MICS, DC=IGI ,DC=IT";
+        X509Name subject = new X509Name(dn);
+        ASN1Set attributes = new DERSet();
+        PKCS10CertificationRequest pkcs10 = null;
+        try {
+			pkcs10 = new PKCS10CertificationRequest(sigAlg, subject, publicKey, attributes, privateKey);
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SignatureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//2
+		PKCS10CertificateRequest request = new PKCS10CertificateRequest(certificateRequest);
+		
+		//3
+		StringWriter sw = new StringWriter();
+        PEMWriter pemWriter = new PEMWriter(sw);
+        pemWriter.writeObject(pkcs10);
+        pemWriter.close();
+        String pemCert = sw.toString();
+		log.info("risultato: "+pemCert);
+		X509Certificate x509certificate = request.getX509Certificate(pemCert);
+		log.info("dn: " + x509certificate.getSubjectDN());
+		//4
+		X509Certificate[] certs = {x509certificate};
+		GlobusCredential credential = new GlobusCredential(privateKey, certs);
+		
+		return credential;
+	}
+	
+	public static GlobusCredential getCredential(String certPath, BindingResult result){
 		
 		GlobusCredential credential =null;
 		

@@ -1,15 +1,32 @@
 package it.italiangrid.caonline.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.PublicKey;
-import java.security.Security;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertPath;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.apache.axis.utils.IOUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.jce.netscape.NetscapeCertRequest;
-import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.openssl.PEMWriter;
+import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
+import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.glite.security.util.DNHandler;
 import org.globus.gsi.GlobusCredential;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +34,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import it.italiangrid.caonline.model.CertificateRequest;
 import it.italiangrid.caonline.util.RequestCertificateUtil;
+import it.italiangrid.caonline.util.SpkacCertificateRequest;
 import it.italiangrid.caonline.util.TokenCreator;
 import it.italiangrid.caonline.util.VOMSAdminCallOut;
 import it.italiangrid.portal.dbapi.domain.Certificate;
@@ -109,9 +128,19 @@ public class HomeController {
 	 * @param result - validating the {@link CertificateRequest} in result there are the errors. 
 	 * @param model - getting the model from the request.
 	 * @return the success page if all is ok or return to the form page if some problem are occurred.
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws NotFoundException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws NoSuchProviderException 
+	 * @throws CertificateException 
+	 * @throws IOException 
 	 */
 	@RequestMapping(value = "/home/certReq", method = RequestMethod.POST)
-    public String createCertificateAndProxy(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model) {
+    public String createCertificateAndProxy(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model) throws CertificateException, NoSuchProviderException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, IOException {
 		log.info("Received request of new Certificate and new Proxy");
 		
 		if (result.hasErrors()) {
@@ -129,14 +158,14 @@ public class HomeController {
 			
 //			GlobusCredential credential = RequestCertificateUtil.doRequestAndStore(certificateRequest,result);
 			
-			String certPath = RequestCertificateUtil.getCertificate(certificateRequest, result);
+			/*String certPath = RequestCertificateUtil.getCertificate(certificateRequest, result);
 			
 			if(certPath == null){
 				result.reject("doRequestAndStore.getCertificato", "Certificate not released");
 				return "home";
-			}
+			}*/
 			
-			GlobusCredential credential = RequestCertificateUtil.getCredential(certPath, result);
+			GlobusCredential credential = RequestCertificateUtil.getCredential(certificateRequest, result);
 			
 			if(credential == null){
 				result.reject("doRequestAndStore.putCertificate", "Certificate not stored into MyProxy");
@@ -164,9 +193,9 @@ public class HomeController {
 			insertVOMS(certificateRequest.getMail(), DNHandler.getSubject(credential.getIdentityCertificate()).getX500());
 			
 			
-			if(RequestCertificateUtil.deleteDirectory(new File(certPath))){
+			/*if(RequestCertificateUtil.deleteDirectory(new File(certPath))){
 				result.reject("doRequestAndStore.deleteDirectory", "Temporary directory don't deleted");
-			}
+			}*/
 			
 			activateUser(certificateRequest.getMail());
 			
@@ -184,10 +213,6 @@ public class HomeController {
 	
 		log.debug("Vo = " + vo.getVo() + " : " + vo.getIdVo());
 		log.debug("Subject: " + subject);
-		
-		
-		
-		
 		userToVoService.save(userInfo.getUserId(), vo.getIdVo(), subject);
 		
 		List<UserToVo> utvo = userToVoService.findById(userInfo.getUserId());
@@ -205,9 +230,10 @@ public class HomeController {
 	 * @param model - getting the model from the request.
 	 * @return the success page if all is OK or return to the form page if some problem are occurred.
 	 * @throws IOException 
+	 * @throws NoSuchProviderException 
 	 */
 	@RequestMapping(value = "/certReq/certReq", method = RequestMethod.POST)
-    public String createCertificate(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model, HttpServletRequest request) throws IOException {
+    public String createCertificate(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model, HttpServletRequest request, HttpServletResponse response) throws IOException, NoSuchProviderException {
 		log.info("Received request of new Certificate");
 		
 		if (result.hasErrors()) {
@@ -218,40 +244,111 @@ public class HomeController {
 		} else {
 			
 			log.info("Received from certReq: \n" + certificateRequest.toString());
-			log.info("keygen: " + request.getParameter("spkac"));
-			log.info("keygen: " + Base64.decode(request.getParameter("spkac")).hashCode());
 			
-			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+			SpkacCertificateRequest csr = new SpkacCertificateRequest(certificateRequest);
 			
-			NetscapeCertRequest req = new NetscapeCertRequest(Base64.decode(request.getParameter("spkac")));
-			
-			PublicKey pubKey = req.getPublicKey();
-			
-			log.info("Pubkey: " + pubKey.toString());
-			
-			/*byte[] bytes = pubKey.getEncoded();
-			
-			FileOutputStream keyfos = new FileOutputStream("/root/testReq.csr");
-			keyfos.write(bytes);
-			keyfos.close();
-			
-			String print = "";
-			
-			for (byte b : bytes) {
-				print += b;
+			try {
+				X509Certificate cert = csr.getX509Certificate(request.getParameter("spkac"));
+				log.info(cert.getSubjectDN());
+				// TODO restituire il certificato. 
+				
+				
+				
+				
+				model.addAttribute("dn", cert.getSubjectDN());
+				
+				
+				StringWriter sw = new StringWriter();
+                PEMWriter pemWriter = new PEMWriter(sw);
+                pemWriter.writeObject(cert);
+                pemWriter.close();
+                String pemCert = sw.toString();
+				
+                
+                
+				
+				log.info(pemCert.trim());
+				
+				model.addAttribute("cert",pemCert);
+//				model.addAttribute("cert2",pemCert.replaceAll("\n", "\" +\n\""));
+				model.addAttribute("cert2",pemCert.replaceAll("\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
+
+//				response.addHeader("Content-Type", "application/x-x509-user-cert");
+//				
+//				OutputStream out = response.getOutputStream();
+//				
+//				PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(out));
+//				pemWriter2.writeObject(cert);
+//                pemWriter2.close();
+				
+				certificateRequest.setCert(cert);
+				
+				model.addAttribute(certificateRequest);
+				
+				FileOutputStream certificate = new FileOutputStream("/etc/pki/tls/certs/CAOnlineBridge/"+ certificateRequest.getCn().hashCode()+".pem");
+				PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(certificate));
+				pemWriter2.writeObject(cert);
+                pemWriter2.close();
+                
+				return "successCertReq";
+			} catch (CertificateException e) {
+				result.reject("Exception", e.getMessage());
+			} catch (AuthorizationDeniedException_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (CADoesntExistsException_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (EjbcaException_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (NotFoundException_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (ApprovalException_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (UserDoesntFullfillEndEntityProfile_Exception e) {
+				result.reject("Exception", e.getMessage());
+			} catch (WaitingForApprovalException_Exception e) {
+				result.reject("Exception", e.getMessage());
 			}
 			
-			log.info("request: "  + print);*/
-			
-			/*
-			 * new NetscapeCertRequest(Base64.decode(spkacData)).getPublicKey()
-			 */
-			
-			
-			return "successCertReq";
-//			return "certReq";
+			return "certReq";
 		}
 		
+	}
+	
+	
+	@RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
+	public void getFile(
+	    @PathVariable("file_name") String fileName, 
+	    HttpServletResponse response) {
+		
+		response.addHeader("Content-Type", "application/x-x509-user-cert");
+		
+		File file = new File("/etc/pki/tls/certs/CAOnlineBridge/"+ fileName.hashCode()+".pem");
+		FileInputStream fileIn;
+		try {
+			fileIn = new FileInputStream(file);
+		
+			OutputStream out = response.getOutputStream();
+			 
+			byte[] outputByte = new byte[4096];
+			//copy binary content to output stream
+			while(fileIn.read(outputByte, 0, 4096) != -1)
+			{
+				out.write(outputByte, 0, 4096);
+			}
+			fileIn.close();
+			out.flush();
+			out.close();
+			
+			file.delete();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
 

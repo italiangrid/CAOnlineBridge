@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/css/main.css' />">
 	
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 	
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -25,6 +25,14 @@
 						window.location.replace("http://"+a_href); // the link
 					}, 3000);
 			}); 
+			
+			var is_chrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+			
+			if(is_chrome){
+				$('.errorblock').show();
+				$('#contentLeft').hide();
+			}
+			
 		});
 		
 		function loading(){
@@ -32,6 +40,9 @@
 			jQuery("#popup").css('display','block'); // displaying the popup
 			jQuery("#popup").fadeIn(500); // Displaying popup with fade in animation
 		}
+		
+		
+		</script>
 		
 	</script>
 
@@ -58,13 +69,13 @@
 							<tr>
 								<td><form:label path="mail">Mail: ${certificateRequest.mail }</form:label></td>
 								<td><form:hidden path="mail" /></td>
-
 							</tr>
 
 							<tr>
 								<td><form:label path="cn">CN:  ${certificateRequest.cn }</form:label></td>
 								<td><form:hidden path="cn" /></td>
 							</tr>
+							
 							<tr>
 								<td><form:label path="o">O:  ${certificateRequest.o }</form:label></td>
 								<td><form:hidden path="o" /></td>
@@ -116,6 +127,11 @@
 					</div>
 					<input type="submit" value="Get Certificate" onclick="loading();"/>
 				</form:form>
+			</div>
+			
+			<div class="errorblock" style="display:none;">
+				Chrome isn't supported for this functionality.<br/>
+				Try with Firefox or Internet Explorer.
 			</div>
 
 

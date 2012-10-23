@@ -1,5 +1,7 @@
 package it.italiangrid.caonline.model;
 
+import java.security.cert.X509Certificate;
+
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -14,7 +16,16 @@ public class CertificateRequest {
 	private String o;
 	@NotEmpty
 	private String cn;
+	private X509Certificate cert;
 	
+	public X509Certificate getCert() {
+		return cert;
+	}
+
+	public void setCert(X509Certificate cert) {
+		this.cert = cert;
+	}
+
 	@Size(min=6, max=10)
 	private String proxyPass1;
 	private String proxyPass2;
