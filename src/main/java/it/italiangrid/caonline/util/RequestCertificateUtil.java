@@ -39,6 +39,7 @@ import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
@@ -131,7 +132,7 @@ public class RequestCertificateUtil {
 	}
 	
 	
-	public static GlobusCredential getCredential(CertificateRequest certificateRequest, BindingResult result) throws CertificateException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, NoSuchProviderException, IOException{
+	public static GlobusCredential getCredential(CertificateRequest certificateRequest, BindingResult result) throws CertificateException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, NoSuchProviderException, IOException, IllegalQueryException_Exception, EjbCAException{
 	
 		/*
 		 * 1.1 creare coppia chiave privata e pubblica

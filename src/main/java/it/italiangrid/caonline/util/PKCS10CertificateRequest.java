@@ -8,7 +8,9 @@ import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Except
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CertificateResponse;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.UserDataVOWS;
 import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.ejbca.core.protocol.ws.common.CertificateHelper;
@@ -35,6 +37,8 @@ public class PKCS10CertificateRequest extends EjbCACertificateRequest{
 	 * @throws WaitingForApprovalException_Exception
 	 * @throws UserDoesntFullfillEndEntityProfile_Exception
 	 * @throws ApprovalException_Exception
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
 	public X509Certificate getX509Certificate(String pkcs10)
 			throws AuthorizationDeniedException_Exception,
@@ -42,11 +46,38 @@ public class PKCS10CertificateRequest extends EjbCACertificateRequest{
 			NotFoundException_Exception, CertificateException,
 			ApprovalException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
-			WaitingForApprovalException_Exception {
+			WaitingForApprovalException_Exception, IllegalQueryException_Exception, EjbCAException {
 
 		createEjbcaUser();
+		
+		if ((user) == null){
+			throw new EjbCAException("User not created");
+		}
+		switch(user.getStatus()){
+		
+		case UserDataVOWS.STATUS_NEW: 
+			CertificateResponse certenv = service.pkcs10Request(user.getUsername(),
+					user.getPassword(), pkcs10, null,
+					CertificateHelper.RESPONSETYPE_CERTIFICATE);
+			
+			if (certenv == null) {
+				throw new EjbCAException("Certificate not created");
+			}
+	
+			X509Certificate cert = certenv.getCertificate();
+	
+			return cert;
+			
+		
+		case UserDataVOWS.STATUS_GENERATED:
+			throw new EjbCAException("Certificate already generated");
+			
+			
+		default: 
+			throw new EjbCAException("User Problem");
+		}
 
-		if ((user) == null)
+		/*if ((user) == null)
 			return null;
 
 		CertificateResponse certenv = service.pkcs10Request(user.getUsername(),
@@ -55,7 +86,7 @@ public class PKCS10CertificateRequest extends EjbCACertificateRequest{
 
 		X509Certificate cert = certenv.getCertificate();
 
-		return cert;
+		return cert;*/
 	}
 
 }

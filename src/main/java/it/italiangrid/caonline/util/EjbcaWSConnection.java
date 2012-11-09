@@ -43,6 +43,8 @@ public class EjbcaWSConnection {
 		this.raCertPasswd = prop.getProperty("raCert.passwd");
 		this.trustStorePath = prop.getProperty("trustStore.path");
 		this.trustStorePasswd = prop.getProperty("trustStore.passwd");
+		
+		log.error(ejbcaWsdlUrl);
 	}
 	
 	public EjbcaWS getEjbcaWS() throws MalformedURLException{
@@ -58,6 +60,8 @@ public class EjbcaWSConnection {
 		  
 		QName qname = new QName("http://ws.protocol.core.ejbca.org/", "EjbcaWSService");
 		EjbcaWSService service = new EjbcaWSService(new URL(this.ejbcaWsdlUrl),qname);
+		
+		
 		
 		return service.getEjbcaWSPort();
 	}

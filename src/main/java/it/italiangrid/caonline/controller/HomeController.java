@@ -14,11 +14,13 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.openssl.PEMWriter;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
@@ -37,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import it.italiangrid.caonline.model.CertificateRequest;
+import it.italiangrid.caonline.util.EjbCAException;
 import it.italiangrid.caonline.util.RequestCertificateUtil;
 import it.italiangrid.caonline.util.SpkacCertificateRequest;
 import it.italiangrid.caonline.util.TokenCreator;
@@ -133,9 +136,10 @@ public class HomeController {
 	 * @throws NoSuchProviderException 
 	 * @throws CertificateException 
 	 * @throws IOException 
+	 * @throws IllegalQueryException_Exception 
 	 */
 	@RequestMapping(value = "/home/certReq", method = RequestMethod.POST)
-    public String createCertificateAndProxy(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model) throws CertificateException, NoSuchProviderException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, IOException {
+    public String createCertificateAndProxy(@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest, BindingResult result, Model model) throws CertificateException, NoSuchProviderException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, IOException, IllegalQueryException_Exception {
 		log.info("Received request of new Certificate and new Proxy");
 		
 		if (result.hasErrors()) {
@@ -147,7 +151,15 @@ public class HomeController {
 			
 			log.info("Received: \n" + certificateRequest.toString());
 			
-			GlobusCredential credential = RequestCertificateUtil.getCredential(certificateRequest, result);
+			GlobusCredential credential = null;
+			try {
+				credential = RequestCertificateUtil.getCredential(certificateRequest, result);
+			} catch (EjbCAException e) {
+				result.reject("Exception", e.getMessage());
+				model.addAttribute("certificateRequest", certificateRequest);
+				return "home";
+				//e.printStackTrace();
+			}
 			
 			if(credential == null){
 				result.reject("doRequestAndStore.putCertificate", "Certificate not stored into MyProxy");
@@ -223,6 +235,12 @@ public class HomeController {
 			
 			try {
 				X509Certificate cert = csr.getX509Certificate(request.getParameter("spkac"));
+				
+				if(cert==null){
+					result.reject("CertificateError", "Certificate already requested");
+					return "certReq";
+				}
+				
 				log.info(cert.getSubjectDN());
 				
 				model.addAttribute("dn", cert.getSubjectDN());
@@ -239,33 +257,77 @@ public class HomeController {
 				model.addAttribute("cert2",pemCert.replaceAll("\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
 				
 				
+				StringBuilder sb = new StringBuilder (cert.getTBSCertificate().length + cert.getSigAlgParams().length + cert.getSignature().length);
+
+				for (byte b: cert.getTBSCertificate())
+			        if (b != 32)
+			            sb.append ((char) b);
+				for (byte b: cert.getSigAlgParams())
+			        if (b != 32)
+			            sb.append ((char) b);
+			    for (byte b: cert.getSignature())
+			        if (b != 32)
+			            sb.append ((char) b);
+			    
+				log.info(sb.toString());
+				
+				
+				
+				
 				certificateRequest.setCert(cert);
 				
 				model.addAttribute(certificateRequest);
 				
 				FileOutputStream certificate = new FileOutputStream("/etc/pki/tls/certs/CAOnlineBridge/"+ certificateRequest.getCn().hashCode()+".pem");
-				PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(certificate));
-				pemWriter2.writeObject(cert);
-                pemWriter2.close();
+				
+				if(request.getHeader("User-Agent").contains("Firefox")){
+					PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(certificate));
+					pemWriter2.writeObject(cert);
+	                pemWriter2.close();
+				} else {
+	                DEROutputStream derCertificate = new DEROutputStream(certificate);
+	                derCertificate.write(cert.getEncoded());
+	                derCertificate.close();
+				}
+				
                 
+                
+			
 				return "successCertReq";
 			} catch (CertificateException e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (AuthorizationDeniedException_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (CADoesntExistsException_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (EjbcaException_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (NotFoundException_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (ApprovalException_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (UserDoesntFullfillEndEntityProfile_Exception e) {
 				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
 			} catch (WaitingForApprovalException_Exception e) {
 				result.reject("Exception", e.getMessage());
-			}
+				e.printStackTrace();
+			} catch (IllegalQueryException_Exception e) {
+				result.reject("Exception", "User matching problem");
+				e.printStackTrace();
+			} catch (EjbCAException e) {
+				result.reject("Exception", e.getMessage());
+				e.printStackTrace();
+			} catch (Exception e) {
+				result.reject("Exception", "Problem with CA connection");
+				e.printStackTrace();
+			} 
 			
 			return "certReq";
 		}

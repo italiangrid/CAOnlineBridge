@@ -3,13 +3,17 @@ package it.italiangrid.caonline.util;
 import it.italiangrid.caonline.model.CertificateRequest;
 
 import java.io.IOException;
+import java.util.List;
+
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaWS;
+import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.UserDataVOWS;
 import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
+import org.ejbca.core.protocol.ws.client.gen.UserMatch;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 
 public class EjbCACertificateRequest {
@@ -111,26 +115,39 @@ public class EjbCACertificateRequest {
 	 * @throws EjbcaException_Exception
 	 * @throws UserDoesntFullfillEndEntityProfile_Exception
 	 * @throws WaitingForApprovalException_Exception
+	 * @throws IllegalQueryException_Exception 
 	 */
 	protected void createEjbcaUser() throws ApprovalException_Exception,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
-			WaitingForApprovalException_Exception {
-
-		user = new UserDataVOWS();
-		user.setUsername(username);
-		user.setSubjectDN(dn);
-		user.setCaName("subca-benci");
-		user.setEmail(null);
-		user.setSubjectAltName(null);
-		user.setEndEntityProfileName("benci");
-		user.setCertificateProfileName("ENDUSER");
-		user.setPassword("userTestPasswd");
-		user.setClearPwd(false);
-		user.setStatus(UserDataVOWS.STATUS_NEW);
-		user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
-
-		service.editUser(user);
+			WaitingForApprovalException_Exception, IllegalQueryException_Exception {
+		
+		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME, UserMatch.MATCH_TYPE_EQUALS, username);
+		
+		List<UserDataVOWS> findUsers = service.findUser(userMatch);
+		
+		if(findUsers.size()==0){
+			user = new UserDataVOWS();
+			user.setUsername(username);
+			user.setSubjectDN(dn);
+			user.setCaName("subca-benci");
+			user.setEmail(null);
+			user.setSubjectAltName(null);
+			user.setEndEntityProfileName("benci");
+			user.setCertificateProfileName("benci-profile");
+			user.setPassword("userTestPasswd");
+			user.setClearPwd(false);
+			user.setStatus(UserDataVOWS.STATUS_NEW);
+			user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
+			service.editUser(user);
+		}else{
+			user = new UserDataVOWS();
+			user = findUsers.get(0);
+			user.setPassword("userTestPasswd");
+			user.setClearPwd(false);
+		}
+		
+		
 	}
 }

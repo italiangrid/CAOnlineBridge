@@ -8,6 +8,7 @@ import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
@@ -29,8 +30,10 @@ public class PKCS10Test {
 	 * @throws NoSuchProviderException 
 	 * @throws CertificateException 
 	 * @throws IOException 
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
-	public static void main(String[] args) throws CertificateException, NoSuchProviderException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, IOException {
+	public static void main(String[] args) throws CertificateException, NoSuchProviderException, AuthorizationDeniedException_Exception, CADoesntExistsException_Exception, EjbcaException_Exception, NotFoundException_Exception, ApprovalException_Exception, UserDoesntFullfillEndEntityProfile_Exception, WaitingForApprovalException_Exception, IOException, IllegalQueryException_Exception, EjbCAException {
 		// TODO Auto-generated method stub
 		CertificateRequest cr = new CertificateRequest("pluto@paperino.it", "CN=Diego Michelotto,OU=cnaf,O=Istituto Nazionale di Fisica Nucleare,O=MICS,DC=IGI,DC=IT ", "CNAF", "INFN", "pippo", "pippo");
 		
