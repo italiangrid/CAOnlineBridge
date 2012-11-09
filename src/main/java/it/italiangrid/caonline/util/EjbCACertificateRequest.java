@@ -146,6 +146,9 @@ public class EjbCACertificateRequest {
 			user = findUsers.get(0);
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
+			/**********/
+			user.setStatus(UserDataVOWS.STATUS_NEW);
+			service.editUser(user);
 		}
 		
 		
