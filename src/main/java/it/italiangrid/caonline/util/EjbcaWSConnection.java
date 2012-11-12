@@ -27,7 +27,7 @@ public class EjbcaWSConnection {
 	public EjbcaWSConnection() throws IOException {
 		String contextPath = EjbcaWSConnection.class.getClassLoader().getResource("").getPath();
 		
-		log.info("dove sono:" + contextPath);
+		log.debug("dove sono:" + contextPath);
 		
 		FileInputStream inStream =
 	    new FileInputStream(contextPath + "/myejbca.properties");
@@ -44,7 +44,7 @@ public class EjbcaWSConnection {
 		this.trustStorePath = prop.getProperty("trustStore.path");
 		this.trustStorePasswd = prop.getProperty("trustStore.passwd");
 		
-		log.error(ejbcaWsdlUrl);
+		log.debug(ejbcaWsdlUrl);
 	}
 	
 	public EjbcaWS getEjbcaWS() throws MalformedURLException{
@@ -60,8 +60,6 @@ public class EjbcaWSConnection {
 		  
 		QName qname = new QName("http://ws.protocol.core.ejbca.org/", "EjbcaWSService");
 		EjbcaWSService service = new EjbcaWSService(new URL(this.ejbcaWsdlUrl),qname);
-		
-		
 		
 		return service.getEjbcaWSPort();
 	}

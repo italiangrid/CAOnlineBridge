@@ -1,7 +1,7 @@
 <c:url var="saveUrl" value="/certReq/certReq" />
 <form:form modelAttribute="certificateRequest" method="POST"
 	action="${saveUrl }">
-	<form:errors path="*" cssClass="errorblock" element="div" />
+<form:errors path="*" cssClass="errorblock" element="div" />
 	<strong>Personal Informations:</strong>
 	<div id="reset"></div>
 	<div id="personalInfo">

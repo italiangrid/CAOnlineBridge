@@ -40,6 +40,7 @@ import javax.validation.Valid;
 
 import it.italiangrid.caonline.model.CertificateRequest;
 import it.italiangrid.caonline.util.EjbCAException;
+import it.italiangrid.caonline.util.PKCS10CertificateRequest;
 import it.italiangrid.caonline.util.RequestCertificateUtil;
 import it.italiangrid.caonline.util.SpkacCertificateRequest;
 import it.italiangrid.caonline.util.TokenCreator;
@@ -149,7 +150,7 @@ public class HomeController {
 			
 		} else {
 			
-			log.info("Received: \n" + certificateRequest.toString());
+//			log.info("Received: \n" + certificateRequest.toString());
 			
 			GlobusCredential credential = null;
 			try {
@@ -158,7 +159,6 @@ public class HomeController {
 				result.reject("Exception", e.getMessage());
 				model.addAttribute("certificateRequest", certificateRequest);
 				return "home";
-				//e.printStackTrace();
 			}
 			
 			if(credential == null){
@@ -231,11 +231,16 @@ public class HomeController {
 			
 			log.info("Received from certReq: \n" + certificateRequest.toString());
 			
-			SpkacCertificateRequest csr = new SpkacCertificateRequest(certificateRequest);
-			
 			try {
-				X509Certificate cert = csr.getX509Certificate(request.getParameter("spkac"));
-				
+				X509Certificate cert = null;
+				if(request.getHeader("User-Agent").contains("MSIE")){
+					log.info("spkac=" + request.getParameter("spkac"));
+					PKCS10CertificateRequest csr = new PKCS10CertificateRequest(certificateRequest);
+					cert = csr.getX509Certificate(request.getParameter("spkac"));
+				} else {
+					SpkacCertificateRequest csr = new SpkacCertificateRequest(certificateRequest);
+					cert = csr.getX509Certificate(request.getParameter("spkac"));
+				}
 				if(cert==null){
 					result.reject("CertificateError", "Certificate already requested");
 					return "certReq";
@@ -254,45 +259,25 @@ public class HomeController {
 				log.info(pemCert.trim());
 				
 				model.addAttribute("cert",pemCert);
-				model.addAttribute("cert2",pemCert.replaceAll("\n", "").replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
-				
-				
-				StringBuilder sb = new StringBuilder (cert.getTBSCertificate().length + cert.getSigAlgParams().length + cert.getSignature().length);
-
-				for (byte b: cert.getTBSCertificate())
-			        if (b != 32)
-			            sb.append ((char) b);
-				for (byte b: cert.getSigAlgParams())
-			        if (b != 32)
-			            sb.append ((char) b);
-			    for (byte b: cert.getSignature())
-			        if (b != 32)
-			            sb.append ((char) b);
-			    
-				log.info(sb.toString());
-				
-				
-				
+				model.addAttribute("cert2",pemCert.replaceAll("\n", ""));
 				
 				certificateRequest.setCert(cert);
 				
 				model.addAttribute(certificateRequest);
-				
-				FileOutputStream certificate = new FileOutputStream("/etc/pki/tls/certs/CAOnlineBridge/"+ certificateRequest.getCn().hashCode()+".pem");
-				
-				if(request.getHeader("User-Agent").contains("Firefox")){
-					PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(certificate));
-					pemWriter2.writeObject(cert);
-	                pemWriter2.close();
-				} else {
-	                DEROutputStream derCertificate = new DEROutputStream(certificate);
-	                derCertificate.write(cert.getEncoded());
-	                derCertificate.close();
+				if(!request.getHeader("User-Agent").contains("MSIE")){
+					FileOutputStream certificate = new FileOutputStream("/etc/pki/tls/certs/CAOnlineBridge/"+ certificateRequest.getCn().hashCode()+".pem");
+					
+					if(request.getHeader("User-Agent").contains("Firefox")){
+						PEMWriter pemWriter2 = new PEMWriter(new OutputStreamWriter(certificate));
+						pemWriter2.writeObject(cert);
+		                pemWriter2.close();
+					} else {
+		                DEROutputStream derCertificate = new DEROutputStream(certificate);
+		                derCertificate.write(cert.getEncoded());
+		                derCertificate.close();
+					}
 				}
 				
-                
-                
-			
 				return "successCertReq";
 			} catch (CertificateException e) {
 				result.reject("Exception", e.getMessage());
