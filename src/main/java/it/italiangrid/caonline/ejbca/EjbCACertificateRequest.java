@@ -1,4 +1,4 @@
-package it.italiangrid.caonline.util;
+package it.italiangrid.caonline.ejbca;
 
 import it.italiangrid.caonline.model.CertificateRequest;
 
@@ -16,6 +16,13 @@ import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_
 import org.ejbca.core.protocol.ws.client.gen.UserMatch;
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 
+/**
+ * Class that used for submit a certificate request to the EjbCA toward the Web
+ * service. Before submitting the request, create a new EjbCA user if is it
+ * necessary.
+ * 
+ * @author dmichelotto - diego.michelotto@cnaf.infn.it
+ */
 public class EjbCACertificateRequest {
 	@SuppressWarnings("unused")
 	private String mail;
@@ -53,11 +60,15 @@ public class EjbCACertificateRequest {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor: create the certificate DN and instantiate the class getting
+	 * the information from arguments.
 	 * 
 	 * @param mail
+	 *            - The user's e-mail
 	 * @param username
+	 *            - The user's username is the CN of the user.
 	 * @param dn
+	 *            - The certificate DN.
 	 */
 	public EjbCACertificateRequest(String mail, String username, String dn) {
 		super();
@@ -74,9 +85,10 @@ public class EjbCACertificateRequest {
 		}
 
 	}
-	
+
 	/**
-	 * Constructor
+	 * Constructor: create the certificate DN and instantiate the class getting
+	 * the information from the CertificateRequest model class.
 	 * 
 	 * @param mail
 	 * @param username
@@ -84,15 +96,14 @@ public class EjbCACertificateRequest {
 	 */
 	public EjbCACertificateRequest(CertificateRequest certificateRequest) {
 		super();
-		
-		 
-		String dn="CN="+certificateRequest.getCn();
-		if(certificateRequest.getL()!=null)
-			dn += " ,OU="+certificateRequest.getL();
-		if(certificateRequest.getO()!=null)
-			dn += " ,O="+certificateRequest.getO();
+
+		String dn = "CN=" + certificateRequest.getCn();
+		if (certificateRequest.getL() != null)
+			dn += " ,OU=" + certificateRequest.getL();
+		if (certificateRequest.getO() != null)
+			dn += " ,O=" + certificateRequest.getO();
 		dn += ", O=MICS, DC=IGI ,DC=IT";
-		
+
 		this.mail = certificateRequest.getMail();
 		this.username = certificateRequest.getCn().trim();
 		this.dn = dn;
@@ -108,6 +119,8 @@ public class EjbCACertificateRequest {
 	}
 
 	/**
+	 * Method that use the EjbCAWS service for adding a new user if dosn't
+	 * exists into EjbCA.
 	 * 
 	 * @throws ApprovalException_Exception
 	 * @throws AuthorizationDeniedException_Exception
@@ -115,19 +128,21 @@ public class EjbCACertificateRequest {
 	 * @throws EjbcaException_Exception
 	 * @throws UserDoesntFullfillEndEntityProfile_Exception
 	 * @throws WaitingForApprovalException_Exception
-	 * @throws IllegalQueryException_Exception 
+	 * @throws IllegalQueryException_Exception
 	 */
 	protected void createEjbcaUser() throws ApprovalException_Exception,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
-			WaitingForApprovalException_Exception, IllegalQueryException_Exception {
-		
-		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME, UserMatch.MATCH_TYPE_EQUALS, username);
-		
+			WaitingForApprovalException_Exception,
+			IllegalQueryException_Exception {
+
+		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME,
+				UserMatch.MATCH_TYPE_EQUALS, username);
+
 		List<UserDataVOWS> findUsers = service.findUser(userMatch);
-		
-		if(findUsers.size()==0){
+
+		if (findUsers.size() == 0) {
 			user = new UserDataVOWS();
 			user.setUsername(username);
 			user.setSubjectDN(dn);
@@ -141,16 +156,12 @@ public class EjbCACertificateRequest {
 			user.setStatus(UserDataVOWS.STATUS_NEW);
 			user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
 			service.editUser(user);
-		}else{
+		} else {
 			user = new UserDataVOWS();
 			user = findUsers.get(0);
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
-			/**********/
-			user.setStatus(UserDataVOWS.STATUS_NEW);
-			service.editUser(user);
 		}
-		
-		
+
 	}
 }

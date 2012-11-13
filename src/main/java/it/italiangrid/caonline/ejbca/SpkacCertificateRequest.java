@@ -1,4 +1,4 @@
-package it.italiangrid.caonline.util;
+package it.italiangrid.caonline.ejbca;
 
 import it.italiangrid.caonline.model.CertificateRequest;
 
@@ -17,18 +17,30 @@ import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_
 import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.ejbca.core.protocol.ws.common.CertificateHelper;
 
-public class SpkacCertificateRequest extends EjbCACertificateRequest{
-	
+/**
+ * Class that extend EjbCACertificateRequest class adding a specific method for
+ * the spkac certificate request.
+ * 
+ * @author dmichelotto - diego.michelotto@cnaf.infn.it
+ */
+public class SpkacCertificateRequest extends EjbCACertificateRequest {
 
+	/**
+	 * Constructor
+	 * 
+	 * @param certificateRequest
+	 *            - The user's certificate request model
+	 */
 	public SpkacCertificateRequest(CertificateRequest certificateRequest) {
 		super(certificateRequest);
 	}
 
 	/**
-	 * Get
+	 * Get a signed certificate from a spkac CSR.
 	 * 
 	 * @param spkac
-	 * @return
+	 *            - The CSR in spkac format.
+	 * @return The user's certificate.
 	 * @throws AuthorizationDeniedException_Exception
 	 * @throws CADoesntExistsException_Exception
 	 * @throws EjbcaException_Exception
@@ -37,8 +49,8 @@ public class SpkacCertificateRequest extends EjbCACertificateRequest{
 	 * @throws WaitingForApprovalException_Exception
 	 * @throws UserDoesntFullfillEndEntityProfile_Exception
 	 * @throws ApprovalException_Exception
-	 * @throws IllegalQueryException_Exception 
-	 * @throws EjbCAException 
+	 * @throws IllegalQueryException_Exception
+	 * @throws EjbCAException
 	 */
 	public X509Certificate getX509Certificate(String spkac)
 			throws AuthorizationDeniedException_Exception,
@@ -46,39 +58,35 @@ public class SpkacCertificateRequest extends EjbCACertificateRequest{
 			NotFoundException_Exception, CertificateException,
 			ApprovalException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
-			WaitingForApprovalException_Exception, IllegalQueryException_Exception, EjbCAException {
+			WaitingForApprovalException_Exception,
+			IllegalQueryException_Exception, EjbCAException {
 
 		createEjbcaUser();
 
-		if ((user) == null){
+		if ((user) == null) {
 			throw new EjbCAException("User not created");
 		}
-		switch(user.getStatus()){
-		
-		case UserDataVOWS.STATUS_NEW: 
-			CertificateResponse certenv = service.spkacRequest(user.getUsername(),
-					user.getPassword(), spkac, null,
+		switch (user.getStatus()) {
+
+		case UserDataVOWS.STATUS_NEW:
+			CertificateResponse certenv = service.spkacRequest(
+					user.getUsername(), user.getPassword(), spkac, null,
 					CertificateHelper.RESPONSETYPE_CERTIFICATE);
-			
+
 			if (certenv == null) {
 				throw new EjbCAException("Certificate not created");
 			}
-	
+
 			X509Certificate cert = certenv.getCertificate();
-			
-	
+
 			return cert;
-			
-		
+
 		case UserDataVOWS.STATUS_GENERATED:
 			throw new EjbCAException("Certificate already generated");
-			
-			
-		default: 
+
+		default:
 			throw new EjbCAException("User Problem");
 		}
 	}
-
-	
 
 }

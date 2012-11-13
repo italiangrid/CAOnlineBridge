@@ -1,4 +1,4 @@
-package it.italiangrid.caonline.util;
+package it.italiangrid.caonline.ejbca;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,10 +12,18 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.ejbca.core.protocol.ws.client.gen.*;
 import org.ejbca.core.protocol.ws.common.CertificateHelper;
 
+/**
+ * Test class for EjbCA web service connectrion, spkac CSR and response
+ * 
+ * @author dmichelotto - diego.michelotto@cnaf.infn.it
+ */
 public class EjbcaWSTest {
 
 	/**
+	 * Main method for class testing
+	 * 
 	 * @param args
+	 *            - default parameters
 	 * @throws MalformedURLException
 	 * @throws NotFoundException_Exception
 	 * @throws EjbcaException_Exception
