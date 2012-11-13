@@ -317,7 +317,7 @@ public class HomeController {
 
 			} catch (Exception e) {
 				result.reject("Exception", e.getMessage());
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 
 			return "certReq";
