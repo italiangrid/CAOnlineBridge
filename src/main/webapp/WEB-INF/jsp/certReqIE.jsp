@@ -1,5 +1,7 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <object id="objCertEnrollClassFactory" classid="clsid:884e2049-217d-11da-b2a4-000e7bbb2b09"></object>    
- <script language="javascript">
+<script type="text/javascript">
 
    function CreateRequest() 
    {
@@ -140,6 +142,6 @@
 	<input type="submit" value="Get Certificate" onclick="loading();"/>
 </form:form>
 
- <script language="javascript">
+ <script type="text/javascript">
  CreateRequest();
  </script>

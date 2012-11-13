@@ -11,8 +11,6 @@ import java.io.StringWriter;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.openssl.PEMWriter;
@@ -38,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import it.italiangrid.caonline.ejbca.EjbCAException;
 import it.italiangrid.caonline.ejbca.PKCS10CertificateRequest;
 import it.italiangrid.caonline.ejbca.SpkacCertificateRequest;
 import it.italiangrid.caonline.model.CertificateRequest;
@@ -46,10 +43,6 @@ import it.italiangrid.caonline.util.DBInteracion;
 import it.italiangrid.caonline.util.RequestCertificateUtil;
 import it.italiangrid.caonline.util.TokenCreator;
 import it.italiangrid.caonline.util.VOMSAdminCallOut;
-import it.italiangrid.portal.dbapi.domain.Certificate;
-import it.italiangrid.portal.dbapi.domain.UserInfo;
-import it.italiangrid.portal.dbapi.domain.UserToVo;
-import it.italiangrid.portal.dbapi.domain.Vo;
 import it.italiangrid.portal.dbapi.services.CertificateService;
 import it.italiangrid.portal.dbapi.services.UserInfoService;
 import it.italiangrid.portal.dbapi.services.UserToVoService;
