@@ -15,6 +15,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -120,6 +121,7 @@ public class RequestCertificateUtil {
 		ASN1Set attributes = new DERSet();
 		PKCS10CertificationRequest pkcs10 = null;
 		try {
+			Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 			pkcs10 = new PKCS10CertificationRequest(sigAlg, subject, publicKey,
 					attributes, privateKey);
 		} catch (InvalidKeyException e) {
