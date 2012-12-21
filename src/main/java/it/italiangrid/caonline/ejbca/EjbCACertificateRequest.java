@@ -5,6 +5,7 @@ import it.italiangrid.caonline.model.CertificateRequest;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
@@ -24,7 +25,9 @@ import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Excepti
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 public class EjbCACertificateRequest {
-	@SuppressWarnings("unused")
+	
+	Logger log = Logger.getLogger(EjbCACertificateRequest.class);
+	
 	private String mail;
 	private String username;
 	private String dn;
@@ -98,11 +101,8 @@ public class EjbCACertificateRequest {
 		super();
 
 		String dn = "CN=" + certificateRequest.getCn();
-		if (certificateRequest.getL() != null)
-			dn += " ,OU=" + certificateRequest.getL();
-		if (certificateRequest.getO() != null)
-			dn += " ,O=" + certificateRequest.getO();
-		dn += ", O=MICS, DC=IGI ,DC=IT";
+		
+		dn += ", OU=Personal Certificate, O=IGI PKI, DC=IGI ,DC=IT";
 
 		this.mail = certificateRequest.getMail();
 		this.username = certificateRequest.getCn().trim();
@@ -141,20 +141,28 @@ public class EjbCACertificateRequest {
 				UserMatch.MATCH_TYPE_EQUALS, username);
 
 		List<UserDataVOWS> findUsers = service.findUser(userMatch);
+		
+		log.error("mail = " + mail);
 
 		if (findUsers.size() == 0) {
 			user = new UserDataVOWS();
 			user.setUsername(username);
+			
+			log.error(dn);
+			
 			user.setSubjectDN(dn);
-			user.setCaName("subca-benci");
+			user.setCaName("IGI CA online");
 			user.setEmail(null);
-			user.setSubjectAltName(null);
-			user.setEndEntityProfileName("benci");
-			user.setCertificateProfileName("benci-profile");
+			user.setSubjectAltName("RFC822NAME="+mail);
+			user.setEndEntityProfileName("IGI CA online enduser");
+			user.setCertificateProfileName("IGI CA online user profile");
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
 			user.setStatus(UserDataVOWS.STATUS_NEW);
 			user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
+			
+			log.error(user.toString());
+			
 			service.editUser(user);
 		} else {
 			user = new UserDataVOWS();
@@ -164,4 +172,39 @@ public class EjbCACertificateRequest {
 		}
 
 	}
+	
+	 private String escapeRDN (String rdn) {
+		 StringBuffer escapedS = new StringBuffer(rdn);
+		 int i = 0;
+		 
+		 while (i < escapedS.length() && escapedS.charAt(i) != '='){
+		 	i++;  //advance until we find the separator =
+		 }
+		 if ( i == escapedS.length()){
+		 	throw new IllegalArgumentException("Could not parse RDN: Attribute " +
+		 			"type and name must be separated by an equal symbol, '='");
+		 }
+		 
+		 i++;
+		 //check for a space or # at the beginning of a string.
+		 if ((escapedS.charAt(i) == ' ') || (escapedS.charAt(i) == '#')){
+		 	escapedS.insert(i++, '\\');
+		 }
+		 
+		 //loop from second char to the second to last
+		 for ( ; i < escapedS.length(); i++){
+		 	if((escapedS.charAt(i) == ',') || (escapedS.charAt(i) == '+') ||
+		 			(escapedS.charAt(i) == '"') || (escapedS.charAt(i) == '\\') ||
+		 			(escapedS.charAt(i) == '<') || (escapedS.charAt(i) == '>') ||
+		 			(escapedS.charAt(i) == ';')) {
+		 		escapedS.insert( i++,'\\');
+		 	}
+		 }
+		 
+		 //check last char for a space
+		 if (escapedS.charAt(escapedS.length()-1) == ' ') {
+		 	escapedS.insert(escapedS.length()-1, '\\');
+		 }
+		 return escapedS.toString();
+		 }
 }
