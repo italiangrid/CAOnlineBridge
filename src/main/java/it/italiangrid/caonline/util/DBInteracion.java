@@ -10,6 +10,7 @@ import it.italiangrid.portal.dbapi.services.UserToVoService;
 import it.italiangrid.portal.dbapi.services.VoService;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.glite.security.util.DNHandler;
@@ -84,9 +85,9 @@ public class DBInteracion {
 		Certificate newCertificate = new Certificate(userInfo, DNHandler
 				.getSubject(cert).getX500(), cert.getNotAfter(), "true",
 				certificates.isEmpty() ? "true" : "false", DNHandler.getIssuer(
-						credential.getIdentityCertificate()).getX500(), null);
+						credential.getIdentityCertificate()).getX500(), UUID.randomUUID().toString());
 
-		int id = certificateService.save(newCertificate, uid);
+		int id = certificateService.save(newCertificate);
 
 		if (id != -1)
 			return certificateService.findByIdCert(id).getUsernameCert();
