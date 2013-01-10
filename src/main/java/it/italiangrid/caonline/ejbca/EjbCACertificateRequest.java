@@ -172,39 +172,4 @@ public class EjbCACertificateRequest {
 		}
 
 	}
-	
-	 private String escapeRDN (String rdn) {
-		 StringBuffer escapedS = new StringBuffer(rdn);
-		 int i = 0;
-		 
-		 while (i < escapedS.length() && escapedS.charAt(i) != '='){
-		 	i++;  //advance until we find the separator =
-		 }
-		 if ( i == escapedS.length()){
-		 	throw new IllegalArgumentException("Could not parse RDN: Attribute " +
-		 			"type and name must be separated by an equal symbol, '='");
-		 }
-		 
-		 i++;
-		 //check for a space or # at the beginning of a string.
-		 if ((escapedS.charAt(i) == ' ') || (escapedS.charAt(i) == '#')){
-		 	escapedS.insert(i++, '\\');
-		 }
-		 
-		 //loop from second char to the second to last
-		 for ( ; i < escapedS.length(); i++){
-		 	if((escapedS.charAt(i) == ',') || (escapedS.charAt(i) == '+') ||
-		 			(escapedS.charAt(i) == '"') || (escapedS.charAt(i) == '\\') ||
-		 			(escapedS.charAt(i) == '<') || (escapedS.charAt(i) == '>') ||
-		 			(escapedS.charAt(i) == ';')) {
-		 		escapedS.insert( i++,'\\');
-		 	}
-		 }
-		 
-		 //check last char for a space
-		 if (escapedS.charAt(escapedS.length()-1) == ' ') {
-		 	escapedS.insert(escapedS.length()-1, '\\');
-		 }
-		 return escapedS.toString();
-		 }
 }
