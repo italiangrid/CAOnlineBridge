@@ -13,13 +13,13 @@
 </head>
 <body>
 	<div id="page">
-		<%@ include file="/WEB-INF/jsp/header.jsp"%>
+		
 		<div id="content">
-			<h2>Request Certificate</h2>
+			
 
 			<div id="content">
-				<div id="contentLeft">
-					<div id="personalInfo">
+				<div id="contentLeft2">
+					<div id="personalInfo2">
 						<h3>
 							<strong>SUCCESS</strong>
 						</h3>
@@ -27,16 +27,11 @@
 						Now you have a proxy certificate valid for 1 year.<br/>	
 						Your Virtual Organization is "vomstest".
 						
-						<p/>
-						
-						Close this pop up window with the red button in the top right corner.
 					</div>
 				</div>
 			</div>
 		</div>
-		<%@ include file="/WEB-INF/jsp/rightMenu.jsp"%>
-
-		<%@ include file="/WEB-INF/jsp/footer.jsp"%>
+		
 		
 	</div>
 </body>

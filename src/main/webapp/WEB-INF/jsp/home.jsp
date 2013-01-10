@@ -37,87 +37,61 @@
 
 </head>
 <body>
-	<div id="page">
-		<%@ include file="/WEB-INF/jsp/header.jsp"%>
-		<div id="content">
-			<h2>Request Certificate</h2>
+	<div id="page2">
+		
+		
+			
 			<div id="content">
 
 
 
-				<div id="contentLeft">
+				<div id="contentLeft2">
 
 					<c:url var="saveUrl" value="/home/certReq" />
 					<form:form modelAttribute="certificateRequest" method="POST"
 						action="${saveUrl }">
 						
-						<strong>Personal Informations:</strong>
-						<div id="reset"></div>
-						<div id="personalInfo">
-							<table>
-								<tr>
-									<td><form:label path="mail">Mail: ${certificateRequest.mail }</form:label></td>
-									<td><form:hidden path="mail" /></td>
-								</tr>
-
-								<tr>
-									<td><form:label path="cn">CN:  ${certificateRequest.cn }</form:label></td>
-									<td><form:hidden path="cn" /></td>
-								</tr>
-
-								<tr>
-									<td><form:label path="o">O:  ${certificateRequest.o }</form:label></td>
-									<td><form:hidden path="o" /></td>
-								</tr>
-
-								<tr>
-									<td><form:label path="l">L:  ${certificateRequest.l }</form:label></td>
-									<td><form:hidden path="l" /></td>
-								</tr>
-								<tr>
-								<td><form:label path="l">C: IT</form:label></td>
-								<td></td>
-							</tr>
-							</table>
-						</div>
-						<!-- <div id="contetRight">Your personal data retreived from your
-							Identity Provider.</div> -->
-						<div id="reset"></div>
-
-						<strong>Proxy password:</strong>
-						<div id="reset"></div>
-						<div id="password">
+						<div id="password2">
+							We are going to provide you of the necessary credentials.<br/>
+	Please insert a password below and click on "<strong>Get Credentials</strong>" button. <br/><br/>
+	<strong>Note:</strong> this password will be asked to use Grid and Cloud resources in a secure way, this password will be not saved in the system.
+	
+	<br/><br/>
 							<form:errors path="*" cssClass="errorblock" element="div" />
 							<table>
 								<tr>
-									<td><form:label path="proxyPass1">Proxy Password:</form:label></td>
+									<td><form:label path="proxyPass1"><strong>Insert Password</strong></form:label></td>
+								</tr>
+								<tr>
 									<td><form:password path="proxyPass1" /></td>
 								</tr>
 
 								<tr>
-									<td><form:label path="proxyPass2">Retype Password:</form:label></td>
+									<td><form:label path="proxyPass2"><strong>Retype Password</strong></form:label></td>
+								</tr>
+								<tr>
 									<td><form:password path="proxyPass2" /></td>
 								</tr>
 
 							</table>
+							<form:hidden path="mail" />
+							<form:hidden path="cn" />
+							<form:hidden path="o" />
+							<form:hidden path="l" />
+							<br/>
+							<input class="buttonCA" type="submit" value="Get Credentials"  onclick="loading();"/>
 						</div>
 
-						<div id="contetRight">Insert the password for store a proxy
-							of you certificate into MyProxy server, don't forgot this
-							password.</div>
+						<div id="contetRight2"><a href="#"><img src="<c:url value='/images/Information2.png'/>" height="64"/>Technical Information</a></div>
 						<div id="reset"  style="margin-bottom: 15px;"></div>
-
-						<input type="submit" value="Get Certificate"  onclick="loading();"/>
+						
+						
 					</form:form>
 
 				</div>
 
-
 			</div>	
-		</div>
-			<%@ include file="/WEB-INF/jsp/rightMenu.jsp"%>
 
-			<%@ include file="/WEB-INF/jsp/footer.jsp"%>
 		<div id="wrapper">
 			<div id="overlay" style="display:none;"></div>
 			<div  id="popup" style="display:none; left:18%;">
