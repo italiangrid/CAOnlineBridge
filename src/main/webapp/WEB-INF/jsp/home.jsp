@@ -54,7 +54,7 @@
 						<div id="password2">
 							We are going to provide you of the necessary credentials.<br/>
 	Please insert a password below and click on "<strong>Get Credentials</strong>" button. <br/><br/>
-	<strong>Note:</strong> this password will be asked to use Grid and Cloud resources in a secure way, this password will be not saved in the system.
+	<strong>Don't forget this password:</strong> it will be asked again to use Grid and Cloud resources in a secure way and it will be not saved in the system.
 	
 	<br/><br/>
 							<form:errors path="*" cssClass="errorblock" element="div" />
@@ -82,7 +82,19 @@
 							<input class="buttonCA" type="submit" value="Get Credentials"  onclick="loading();"/>
 						</div>
 
-						<div id="contetRight2"><a href="#"><img src="<c:url value='/images/Information2.png'/>" height="64"/>Technical Information</a></div>
+						<div id="contetRight2">
+						
+						<script  type="text/javascript">
+					 
+						 function openNewWindow() {
+						 popupWin = window.open('https://portal.italiangrid.it:8443/info/certificate-upload-technical-info.html',
+						 'open_window',
+						 'scrollbars, resizable, dependent, width=640, height=480, left=0, top=0')
+						 }
+						 
+						 </script>
+						
+						<a href="javascript:openNewWindow();"><img src="<c:url value='/images/Information2.png'/>" height="64"/>Technical Information</a></div>
 						<div id="reset"  style="margin-bottom: 15px;"></div>
 						
 						
@@ -94,7 +106,7 @@
 
 		<div id="wrapper">
 			<div id="overlay" style="display:none;"></div>
-			<div  id="popup" style="display:none; left:18%;">
+			<div  id="popup" style="display:none; left:16%; width:300px;">
 				<img src="<c:url value='/images/loading.gif'/>" />
 			</div>
 			
