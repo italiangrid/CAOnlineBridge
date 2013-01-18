@@ -85,7 +85,7 @@ public class DBInteracion {
 		Certificate newCertificate = new Certificate(userInfo, DNHandler
 				.getSubject(cert).getX500(), cert.getNotAfter(), "true",
 				certificates.isEmpty() ? "true" : "false", DNHandler.getIssuer(
-						credential.getIdentityCertificate()).getX500(), UUID.randomUUID().toString());
+						credential.getIdentityCertificate()).getX500(), UUID.randomUUID().toString(), "true");
 
 		int id = certificateService.save(newCertificate);
 
