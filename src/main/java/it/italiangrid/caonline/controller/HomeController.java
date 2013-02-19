@@ -9,19 +9,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.security.NoSuchProviderException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.openssl.PEMWriter;
-import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
-import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
-import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.glite.security.util.DNHandler;
 import org.globus.gsi.GlobusCredential;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,33 +44,51 @@ import it.italiangrid.portal.dbapi.services.VoService;
  * pattern for developing Servelet.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
- * 
  */
 
 @Controller("homeController")
 public class HomeController {
 
-	/**
-	 * Logger attribute
+	/** 
+	 * Logger attribute.
 	 */
 	private static final Logger log = Logger.getLogger(HomeController.class);
 
-	private static String NOPASSWORD = "noPasswd";
-
+	/**
+	 * Password.
+	 */
+	private static final String NOPASSWORD = "noPasswd";
+	
+	/**
+	 * Array size.
+	 */
+	private static final int BYTE_ARRAY_SIZE = 4096;
+	
+	/**
+	 * Database service.
+	 */
 	@Autowired
 	private VoService voService;
 
+	/**
+	 * Database service.
+	 */
 	@Autowired
 	private UserToVoService userToVoService;
 
+	/**
+	 * Database service.
+	 */
 	@Autowired
 	private CertificateService certificateService;
 
+	/**
+	 * Database service.
+	 */
 	@Autowired
 	private UserInfoService userInfoService;
 
 	/**
-	 * 
 	 * This method return two different page depends if the use directly access
 	 * to the servlet or passing from the portal.
 	 * 
@@ -92,7 +101,8 @@ public class HomeController {
 	 *         certReq.jsp if don't receive the tokens
 	 */
 	@RequestMapping(value = "/home")
-	public String showHome(HttpServletRequest request, Model model) {
+	public final String showHome(final HttpServletRequest request,
+			final Model model) {
 		log.debug("Home controller");
 		if ((request.getParameter("t1") != null)
 				&& (request.getParameter("t2") != null)) {
@@ -117,7 +127,8 @@ public class HomeController {
 								null, null));
 				return "home";
 			} else {
-				log.error("Intrusion detected from: " + request.getRemoteAddr());
+				log.error("Intrusion detected from: "
+						+ request.getRemoteAddr());
 				return "error";
 			}
 		}
@@ -156,9 +167,9 @@ public class HomeController {
 	 * @throws IllegalQueryException_Exception
 	 */
 	@RequestMapping(value = "/home/certReq", method = RequestMethod.POST)
-	public String createCertificateAndProxy(
-			@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest,
-			BindingResult result, Model model) {
+	public final String createCertificateAndProxy(
+			@Valid @ModelAttribute("certificateRequest") final CertificateRequest certificateRequest,
+			final BindingResult result, final Model model) {
 		log.debug("Received request of new Certificate and new Proxy");
 
 		if (result.hasErrors()) {
@@ -235,17 +246,22 @@ public class HomeController {
 	 *            are the errors.
 	 * @param model
 	 *            - getting the model from the request.
+	 * @param response
+	 *            - the servlet response.
+	 * @param request
+	 *            - the servlet request.
 	 * @return the success page if all is OK or return to the form page if some
 	 *         problem are occurred.
-	 * @throws IOException
-	 * @throws NoSuchProviderException
+	 * @throws IOException 
+	 * @throws NoSuchProviderException 
 	 */
 	@RequestMapping(value = "/certReq/certReq", method = RequestMethod.POST)
-	public String createCertificate(
-			@Valid @ModelAttribute("certificateRequest") CertificateRequest certificateRequest,
-			BindingResult result, Model model, HttpServletRequest request,
-			HttpServletResponse response) throws IOException,
-			NoSuchProviderException {
+	public final String createCertificate(
+			@Valid @ModelAttribute("certificateRequest") final CertificateRequest certificateRequest,
+			final BindingResult result, final Model model,
+			final HttpServletRequest request, 
+			final HttpServletResponse response)
+			throws IOException, NoSuchProviderException {
 		log.debug("Received request of new Certificate");
 
 		if (result.hasErrors()) {
@@ -317,7 +333,7 @@ public class HomeController {
 
 			} catch (Exception e) {
 				result.reject("Exception", e.getMessage());
-//				e.printStackTrace();
+				// e.printStackTrace();
 			}
 
 			return "certReq";
@@ -325,9 +341,17 @@ public class HomeController {
 
 	}
 
+	/**
+	 * Return the certificate file to the browser.
+	 * 
+	 * @param fileName
+	 *            - the certificate filename.
+	 * @param response
+	 *            - the servlet response.
+	 */
 	@RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)
-	public void getFile(@PathVariable("file_name") String fileName,
-			HttpServletResponse response) {
+	public final void getFile(@PathVariable("file_name") final String fileName,
+			final HttpServletResponse response) {
 
 		response.addHeader("Content-Type", "application/x-x509-user-cert");
 
@@ -339,10 +363,10 @@ public class HomeController {
 
 			OutputStream out = response.getOutputStream();
 
-			byte[] outputByte = new byte[4096];
+			byte[] outputByte = new byte[BYTE_ARRAY_SIZE];
 			// copy binary content to output stream
-			while (fileIn.read(outputByte, 0, 4096) != -1) {
-				out.write(outputByte, 0, 4096);
+			while (fileIn.read(outputByte, 0, BYTE_ARRAY_SIZE) != -1) {
+				out.write(outputByte, 0, BYTE_ARRAY_SIZE);
 			}
 			fileIn.close();
 			out.flush();

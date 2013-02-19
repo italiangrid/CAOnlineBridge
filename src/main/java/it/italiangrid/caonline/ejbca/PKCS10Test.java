@@ -18,31 +18,38 @@ import it.italiangrid.caonline.model.CertificateRequest;
 import it.italiangrid.caonline.util.RequestCertificateUtil;
 
 /**
- * Test class for pkcs10 CSR and response
+ * Test class for pkcs10 CSR and response.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
-public class PKCS10Test {
+public final class PKCS10Test {
 
 	/**
-	 * Main method for class testing
+	 * Default contructor.
+	 */
+	private PKCS10Test() {
+		
+	}
+	
+	/**
+	 * Main method for class testing.
 	 * 
 	 * @param args
 	 *            - default parameters
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws ApprovalException_Exception
-	 * @throws NotFoundException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws NoSuchProviderException
-	 * @throws CertificateException
-	 * @throws IOException
-	 * @throws IllegalQueryException_Exception
-	 * @throws EjbCAException
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws NotFoundException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws NoSuchProviderException 
+	 * @throws CertificateException 
+	 * @throws IOException 
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
-	public static void main(String[] args) throws CertificateException,
+	public static void main(final String[] args) throws CertificateException,
 			NoSuchProviderException, AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			NotFoundException_Exception, ApprovalException_Exception,

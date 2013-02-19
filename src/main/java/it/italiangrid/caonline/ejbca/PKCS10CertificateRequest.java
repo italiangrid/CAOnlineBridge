@@ -26,12 +26,12 @@ import it.italiangrid.caonline.model.CertificateRequest;
 public class PKCS10CertificateRequest extends EjbCACertificateRequest {
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param certificateRequest
 	 *            - The user's certificate request model
 	 */
-	public PKCS10CertificateRequest(CertificateRequest certificateRequest) {
+	public PKCS10CertificateRequest(final CertificateRequest certificateRequest) {
 		super(certificateRequest);
 		// TODO Auto-generated constructor stub
 	}
@@ -42,18 +42,18 @@ public class PKCS10CertificateRequest extends EjbCACertificateRequest {
 	 * @param pkcs10
 	 *            - The CSR in PKCS10 format.
 	 * @return The user's certificate.
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws NotFoundException_Exception
-	 * @throws CertificateException
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws ApprovalException_Exception
-	 * @throws IllegalQueryException_Exception
-	 * @throws EjbCAException
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws NotFoundException_Exception 
+	 * @throws CertificateException 
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
-	public X509Certificate getX509Certificate(String pkcs10)
+	public final X509Certificate getX509Certificate(final String pkcs10)
 			throws AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			NotFoundException_Exception, CertificateException,

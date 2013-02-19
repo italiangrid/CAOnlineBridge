@@ -48,11 +48,30 @@ import org.ietf.jgss.GSSException;
 import org.springframework.validation.BindingResult;
 
 /**
- * Class that define some utility method for the Controller
+ * Class that define some utility method for the Controller.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
-public class RequestCertificateUtil {
+public final class RequestCertificateUtil {
+	
+
+	/**
+	 * Array size.
+	 */
+	private static final int KEY_SIZE = 2048;
+	
+
+	/**
+	 * Array size.
+	 */
+	private static final int MYPROXY_PORT = 7512;
+	
+	/**
+	 * Contructor.
+	 */
+	private RequestCertificateUtil() {
+		
+	}
 
 	/**
 	 * Logger of the class RequestCertificateUtil.
@@ -65,26 +84,26 @@ public class RequestCertificateUtil {
 	 * certificate.
 	 * 
 	 * @param certificateRequest
-	 *            - the request of the certificate
+	 *            - the request of the certificate.
 	 * @param result
-	 *            - object that contains the result of the operation
-	 * @return The User Certificate
-	 * @throws CertificateException
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws NotFoundException_Exception
-	 * @throws ApprovalException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws NoSuchProviderException
-	 * @throws IOException
-	 * @throws IllegalQueryException_Exception
-	 * @throws EjbCAException
+	 *            - object that contains the result of the operation.
+	 * @return The User Certificate.
+	 * @throws CertificateException 
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws NotFoundException_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws NoSuchProviderException 
+	 * @throws IOException 
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
 	public static GlobusCredential getCredential(
-			CertificateRequest certificateRequest, BindingResult result)
-			throws CertificateException,
+			final CertificateRequest certificateRequest,
+			final BindingResult result) throws CertificateException,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			NotFoundException_Exception, ApprovalException_Exception,
@@ -101,8 +120,10 @@ public class RequestCertificateUtil {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-
-		keyGen.initialize(2048, new SecureRandom());
+		if (keyGen == null){
+			return null;
+		}
+		keyGen.initialize(KEY_SIZE, new SecureRandom());
 		KeyPair keypair = keyGen.generateKeyPair();
 		PublicKey publicKey = keypair.getPublic();
 		PrivateKey privateKey = keypair.getPrivate();
@@ -112,10 +133,12 @@ public class RequestCertificateUtil {
 		 */
 		String sigAlg = "SHA1WithRSA";
 		String dn = "CN=" + certificateRequest.getCn();
-		if (certificateRequest.getL() != null)
+		if (certificateRequest.getL() != null) {
 			dn += " ,OU=" + certificateRequest.getL();
-		if (certificateRequest.getO() != null)
+		}
+		if (certificateRequest.getO() != null) {
 			dn += " ,O=" + certificateRequest.getO();
+		}
 		dn += ", O=MICS, DC=IGI ,DC=IT";
 		X509Name subject = new X509Name(dn);
 		ASN1Set attributes = new DERSet();
@@ -155,18 +178,29 @@ public class RequestCertificateUtil {
 		/*
 		 * GlobusCredential conversion
 		 */
-		X509Certificate[] certs = { x509certificate };
+		X509Certificate[] certs = {x509certificate };
 		GlobusCredential credential = new GlobusCredential(privateKey, certs);
 
 		return credential;
 	}
 
-	public static boolean putCertificate(GlobusCredential credential,
-			BindingResult result, String password, String usernameCert) {
+	/**
+	 * Store certificate into myproxy server.
+	 * 
+	 * @param credential - certificate.
+	 * @param result - binding result.
+	 * @param password - myproxy password.
+	 * @param usernameCert - myproxy username.
+	 * @return return true if all ok.
+	 */
+	public static boolean putCertificate(final GlobusCredential credential,
+			final BindingResult result, final String password,
+			final String usernameCert) {
 
 		try {
 
-			MyProxy myProxyServer = new MyProxy("fullback.cnaf.infn.it", 7512);
+			MyProxy myProxyServer = new MyProxy("fullback.cnaf.infn.it",
+					MYPROXY_PORT);
 
 			GSSCredential proxy = createProxy(credential);
 
@@ -208,7 +242,12 @@ public class RequestCertificateUtil {
 
 	}
 
-	private static GSSCredential createProxy(GlobusCredential credential) {
+	/**
+	 * Create proxy from certificate.
+	 * @param credential - the certificate.
+	 * @return the proxy.
+	 */
+	private static GSSCredential createProxy(final GlobusCredential credential) {
 		X509Certificate[] userCert = credential.getCertificateChain();
 		PrivateKey userKey = credential.getPrivateKey();
 		GlobusCredential gridProxy = null;
@@ -252,7 +291,13 @@ public class RequestCertificateUtil {
 
 	}
 
-	public static boolean deleteDirectory(File path) {
+	/**
+	 * Delete certificate.
+	 * 
+	 * @param path - the certificate path
+	 * @return true if all is ok.
+	 */
+	public static boolean deleteDirectory(final File path) {
 		if (path.exists()) {
 			File[] files = path.listFiles();
 			for (int i = 0; i < files.length; i++) {

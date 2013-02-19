@@ -27,7 +27,7 @@ import org.glite.security.voms.service.admin.VOMSAdminServiceLocator;
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 
-public class VOMSAdminCallOut {
+public final class VOMSAdminCallOut {
 	/*
 	 * Eclipse configuration for test.
 	 * -Daxis.socketSecureFactory=org.glite.security
@@ -35,9 +35,16 @@ public class VOMSAdminCallOut {
 	 * -DsslCertFile=/etc/grid-security/hostcert.pem
 	 * -DsslKey=/etc/grid-security/hostkey.pem
 	 */
+	
+	/**
+	 * Contructor.
+	 */
+	private VOMSAdminCallOut() {
+		
+	}
 
 	/**
-	 * Logger
+	 * Logger.
 	 */
 	private static final Logger log = Logger.getLogger(VOMSAdminCallOut.class);
 
@@ -45,8 +52,20 @@ public class VOMSAdminCallOut {
 	 * Default configuration if the configuration file dosn't exist.
 	 */
 	private static final String DEFAULT_SSL_CERT_FILE = "/etc/grid-security/hostcert.pem";
+
+	/**
+	 * Default configuration if the configuration file dosn't exist.
+	 */
 	private static final String DEFAULT_SSL_KEY = "/etc/grid-security/hostkey.pem";
+
+	/**
+	 * Default configuration if the configuration file dosn't exist.
+	 */
 	private static final String VOMS_HOST = "gridlab11.cnaf.infn.it";
+	
+	/**
+	 * Default configuration if the configuration file dosn't exist.
+	 */
 	private static final String VO = "vomstest";
 
 	/**
@@ -60,8 +79,8 @@ public class VOMSAdminCallOut {
 	 *            - the user CN
 	 * @return true if all went done
 	 */
-	public static boolean putUser(X509Certificate credential, String mail,
-			String cn) {
+	public static boolean putUser(final X509Certificate credential,
+			final String mail, final String cn) {
 
 		String cert = DEFAULT_SSL_CERT_FILE;
 		String key = DEFAULT_SSL_KEY;
@@ -164,9 +183,10 @@ public class VOMSAdminCallOut {
 
 			log.debug("VO: " + adminService.getVOName());
 
-			if (adminService.getUser(user.getDN(), user.getCA()) == null)
+			if (adminService.getUser(user.getDN(), user.getCA()) == null) {
 				adminService.createUser(user);
-
+			}
+			
 			return true;
 
 		} catch (VOMSException e) {

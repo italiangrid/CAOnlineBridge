@@ -6,8 +6,8 @@ package it.italiangrid.caonline.ejbca;
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 public class EjbCAException extends Exception {
-	/**
-	 * Serial
+	/** 
+	 * Serial.
 	 */
 	private static final long serialVersionUID = -3844885146769278843L;
 
@@ -16,13 +16,13 @@ public class EjbCAException extends Exception {
 	 */
 	private String message;
 
-	/**
-	 * Constructor
+	/** 
+	 * Constructor.
 	 * 
 	 * @param message
 	 *            - Exception message.
 	 */
-	public EjbCAException(String message) {
+	public EjbCAException(final String message) {
 		super();
 		this.message = message;
 	}
@@ -32,7 +32,7 @@ public class EjbCAException extends Exception {
 	 * 
 	 * @return The exception message.
 	 */
-	public String getMessage() {
+	public final String getMessage() {
 		return message;
 	}
 }

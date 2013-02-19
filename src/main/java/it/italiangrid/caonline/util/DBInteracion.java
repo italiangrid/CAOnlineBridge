@@ -30,25 +30,38 @@ public class DBInteracion {
 	 */
 	private static final Logger log = Logger.getLogger(DBInteracion.class);
 
+	/**
+	 * The database service.
+	 */
 	private VoService voService;
 
+	/**
+	 * The database service.
+	 */
 	private UserToVoService userToVoService;
 
+	/**
+	 * The database service.
+	 */
 	private CertificateService certificateService;
 
+	/**
+	 * The database service.
+	 */
 	private UserInfoService userInfoService;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
-	 * @param voService
-	 * @param userToVoService
-	 * @param certificateService
-	 * @param userInfoService
+	 * @param voService - the database service.
+	 * @param userToVoService - the database service.
+	 * @param certificateService - the database service.
+	 * @param userInfoService - the database service.
 	 */
-	public DBInteracion(VoService voService, UserToVoService userToVoService,
-			CertificateService certificateService,
-			UserInfoService userInfoService) {
+	public DBInteracion(final VoService voService,
+			final UserToVoService userToVoService,
+			final CertificateService certificateService,
+			final UserInfoService userInfoService) {
 		super();
 		this.voService = voService;
 		this.userToVoService = userToVoService;
@@ -58,7 +71,7 @@ public class DBInteracion {
 
 	/**
 	 * Method for insert certificate information of the user's certificate into
-	 * portal DB
+	 * portal DB.
 	 * 
 	 * @param credential
 	 *            - User's certificate
@@ -67,7 +80,8 @@ public class DBInteracion {
 	 * @return return the username associated to the certificate in the portal
 	 *         DB
 	 */
-	public String insertCertificate(GlobusCredential credential, String mail) {
+	public final String insertCertificate(final GlobusCredential credential,
+			final String mail) {
 
 		UserInfo userInfo = userInfoService.findByMail(mail);
 
@@ -81,28 +95,36 @@ public class DBInteracion {
 		List<Certificate> certificates = certificateService.findById(uid);
 
 		log.info("/" + credential.getSubject().replaceAll(", ", "/"));
-
-		Certificate newCertificate = new Certificate(userInfo, DNHandler
-				.getSubject(cert).getX500(), cert.getNotAfter(), "true",
-				certificates.isEmpty() ? "true" : "false", DNHandler.getIssuer(
-						credential.getIdentityCertificate()).getX500(), UUID.randomUUID().toString(), "true");
-
+		Certificate newCertificate = null;
+		if (certificates.isEmpty()) {
+			newCertificate = new Certificate(userInfo, DNHandler.getSubject(
+					cert).getX500(), cert.getNotAfter(), "true", "true",
+					DNHandler.getIssuer(credential.getIdentityCertificate())
+							.getX500(), UUID.randomUUID().toString(), "true");
+		} else {
+			newCertificate = new Certificate(userInfo, DNHandler.getSubject(
+					cert).getX500(), cert.getNotAfter(), "true", "false",
+					DNHandler.getIssuer(credential.getIdentityCertificate())
+							.getX500(), UUID.randomUUID().toString(), "true");
+		}
+		
 		int id = certificateService.save(newCertificate);
 
-		if (id != -1)
+		if (id != -1) {
 			return certificateService.findByIdCert(id).getUsernameCert();
-
+		}
+		
 		return null;
 	}
 
 	/**
-	 * Method that activate user into the portal for using the grid
+	 * Method that activate user into the portal for using the grid.
 	 * 
 	 * @param mail
 	 *            - User's e-mail for identification.
 	 * @return return false.
 	 */
-	public boolean activateUser(String mail) {
+	public final boolean activateUser(final String mail) {
 
 		UserInfo userInfo = userInfoService.findByMail(mail);
 
@@ -121,7 +143,7 @@ public class DBInteracion {
 	 * @param subject
 	 *            - Certificate's DN
 	 */
-	public void insertVOMS(String mail, String subject) {
+	public final void insertVOMS(final String mail, final String subject) {
 
 		UserInfo userInfo = userInfoService.findByMail(mail);
 
@@ -133,9 +155,9 @@ public class DBInteracion {
 
 		List<UserToVo> utvo = userToVoService.findById(userInfo.getUserId());
 
-		if (utvo.size() == 1)
+		if (utvo.size() == 1) {
 			userToVoService.setDefault(userInfo.getUserId(), vo.getIdVo());
-
+		}
 	}
 
 }

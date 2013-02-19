@@ -26,12 +26,12 @@ import org.ejbca.core.protocol.ws.common.CertificateHelper;
 public class SpkacCertificateRequest extends EjbCACertificateRequest {
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param certificateRequest
 	 *            - The user's certificate request model
 	 */
-	public SpkacCertificateRequest(CertificateRequest certificateRequest) {
+	public SpkacCertificateRequest(final CertificateRequest certificateRequest) {
 		super(certificateRequest);
 	}
 
@@ -41,18 +41,18 @@ public class SpkacCertificateRequest extends EjbCACertificateRequest {
 	 * @param spkac
 	 *            - The CSR in spkac format.
 	 * @return The user's certificate.
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws NotFoundException_Exception
-	 * @throws CertificateException
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws ApprovalException_Exception
-	 * @throws IllegalQueryException_Exception
-	 * @throws EjbCAException
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws NotFoundException_Exception 
+	 * @throws CertificateException 
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws IllegalQueryException_Exception 
+	 * @throws EjbCAException 
 	 */
-	public X509Certificate getX509Certificate(String spkac)
+	public final X509Certificate getX509Certificate(final String spkac)
 			throws AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			NotFoundException_Exception, CertificateException,

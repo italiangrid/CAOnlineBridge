@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.ScriptAssert;
 
 /**
- * Class that define the request certificate model
+ * Class that define the request certificate model.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
@@ -15,43 +15,47 @@ import org.hibernate.validator.constraints.ScriptAssert;
 public class CertificateRequest {
 
 	/**
-	 * User's e-mail
+	 * User's e-mail.
 	 */
 	@NotEmpty
 	private String mail;
 
 	/**
-	 * User's locality attribute
+	 * User's locality attribute.
 	 */
 	private String l;
 
 	/**
-	 * User's organization attribute
+	 * User's organization attribute.
 	 */
 	private String o;
 
 	/**
-	 * User's canonical name
+	 * User's canonical name.
 	 */
 	@NotEmpty
 	private String cn;
 
 	/**
-	 * User's password
+	 * User's password.
 	 */
 	@Size(min = 6, max = 10)
 	private String proxyPass1;
+	
+	/**
+	 * User's retyped password.
+	 */
 	private String proxyPass2;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param mail
 	 *            - User's e-mail
 	 * @param cn
 	 *            - User's Canonical Name
 	 */
-	public CertificateRequest(String mail, String cn) {
+	public CertificateRequest(final String mail, final String cn) {
 		this.mail = mail;
 		this.cn = cn;
 		this.l = "";
@@ -61,7 +65,7 @@ public class CertificateRequest {
 	}
 
 	/**
-	 * Default constructor
+	 * Default constructor.
 	 */
 	public CertificateRequest() {
 		this.mail = "";
@@ -73,7 +77,7 @@ public class CertificateRequest {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param mail
 	 *            - User's e-mail
@@ -88,8 +92,9 @@ public class CertificateRequest {
 	 * @param proxyPass2
 	 *            - User's retyped password
 	 */
-	public CertificateRequest(String mail, String cn, String l, String o,
-			String proxyPass1, String proxyPass2) {
+	public CertificateRequest(final String mail, final String cn,
+			final String l, final String o, final String proxyPass1,
+			final String proxyPass2) {
 		this.mail = mail;
 		this.cn = cn;
 		this.l = l;
@@ -99,123 +104,126 @@ public class CertificateRequest {
 	}
 
 	/**
-	 * Getter e-mail method
+	 * Getter e-mail method.
 	 * 
 	 * @return The User's e-mail
 	 */
-	public String getMail() {
+	public final String getMail() {
 		return this.mail;
 	}
 
 	/**
-	 * Setter e-mail method
+	 * Setter e-mail method.
 	 * 
 	 * @param mail
-	 *            - The User's e-mail
+	 *            - The User's e-mail.
 	 */
-	public void setMail(String mail) {
+	public final void setMail(final String mail) {
 		this.mail = mail;
 	}
 
 	/**
-	 * Getter Locality attribute method
+	 * Getter Locality attribute method.
 	 * 
-	 * @return The user's Locality attribute
+	 * @return The user's Locality attribute.
 	 */
-	public String getL() {
+	public final String getL() {
 		return this.l;
 	}
 
 	/**
-	 * Setter Locality attribute method
+	 * Setter Locality attribute method.
 	 * 
-	 * @param o
-	 *            - The user's Locality attribute
+	 * @param l
+	 *            - The user's Locality attribute.
 	 */
-	public void setL(String l) {
+	public final void setL(final String l) {
 		this.l = l;
 	}
 
 	/**
-	 * Getter Organization attribute method
+	 * Getter Organization attribute method.
 	 * 
-	 * @return The user's Organization attribute
+	 * @return The user's Organization attribute.
 	 */
-	public String getO() {
+	public final String getO() {
 		return this.o;
 	}
 
 	/**
-	 * Setter Organization attribute method
+	 * Setter Organization attribute method.
 	 * 
 	 * @param o
-	 *            - The user's Organization attribute
+	 *            - The user's Organization attribute.
 	 */
-	public void setO(String o) {
+	public final void setO(final String o) {
 		this.o = o;
 	}
 
 	/**
-	 * Getter Canonical Name method
+	 * Getter Canonical Name method.
 	 * 
-	 * @return The user's Canonical Name
+	 * @return The user's Canonical Name.
 	 */
-	public String getCn() {
+	public final String getCn() {
 		return this.cn;
 	}
 
 	/**
-	 * Setter Canonical Name method
+	 * Setter Canonical Name method.
 	 * 
 	 * @param cn
-	 *            - The user's Canonical Name
+	 *            - The user's Canonical Name.
 	 */
-	public void setCn(String cn) {
+	public final void setCn(final String cn) {
 		this.cn = cn;
 	}
 
 	/**
-	 * Getter password method
+	 * Getter password method.
 	 * 
-	 * @return The user's password
+	 * @return The user's password.
 	 */
-	public String getProxyPass1() {
+	public final String getProxyPass1() {
 		return this.proxyPass1;
 	}
 
 	/**
-	 * Setter password method
+	 * Setter password method.
 	 * 
-	 * @param proxyPass2
-	 *            - The user's password
+	 * @param proxyPass1
+	 *            - The user's password.
 	 */
-	public void setProxyPass1(String proxyPass1) {
+	public final void setProxyPass1(final String proxyPass1) {
 		this.proxyPass1 = proxyPass1;
 	}
 
 	/**
-	 * Getter password method
+	 * Getter password method.
 	 * 
-	 * @return The user's retyped password
+	 * @return The user's retyped password.
 	 */
-	public String getProxyPass2() {
+	public final String getProxyPass2() {
 		return this.proxyPass2;
 	}
 
 	/**
-	 * Setter password method
+	 * Setter password method.
 	 * 
 	 * @param proxyPass2
-	 *            - The user's retyped password
+	 *            - The user's retyped password.
 	 */
-	public void setProxyPass2(String proxyPass2) {
+	public final void setProxyPass2(final String proxyPass2) {
 		this.proxyPass2 = proxyPass2;
 	}
 
 	/**
-	 * toString overwrited method
+	 * toString overwrited method.
+	 * 
+	 * @return The certificate request.
 	 */
-	public String toString() {
+	@Override
+	public final String toString() {
 		return "CN =       " + this.cn + "\n" + "O =        " + this.o + "\n"
 				+ "L =        " + this.l + "\n" + "Mail =     " + this.mail
 				+ "\n" + "ProxyPass1 " + this.proxyPass1 + "\n" + "ProxyPass2 "

@@ -9,35 +9,55 @@ import java.security.cert.X509Certificate;
 import javax.xml.namespace.QName;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.ejbca.core.protocol.ws.client.gen.*;
+import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.ApprovalRequestExecutionException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.ApprovalRequestExpiredException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.CertificateResponse;
+import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.EjbcaWS;
+import org.ejbca.core.protocol.ws.client.gen.EjbcaWSService;
+import org.ejbca.core.protocol.ws.client.gen.HardTokenDoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.NotFoundException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.UserDataVOWS;
+import org.ejbca.core.protocol.ws.client.gen.UserDoesntFullfillEndEntityProfile_Exception;
+import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Exception;
 import org.ejbca.core.protocol.ws.common.CertificateHelper;
 
 /**
- * Test class for EjbCA web service connectrion, spkac CSR and response
+ * Test class for EjbCA web service connectrion, spkac CSR and response.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
-public class EjbcaWSTest {
+public final class EjbcaWSTest {
+	
+	/**
+	 * Defaul contructor.
+	 */
+	private EjbcaWSTest() {
+		
+	}
 
 	/**
-	 * Main method for class testing
+	 * Main method for class testing.
 	 * 
 	 * @param args
 	 *            - default parameters
-	 * @throws MalformedURLException
-	 * @throws NotFoundException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws CertificateException
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws ApprovalException_Exception
-	 * @throws HardTokenDoesntExistsException_Exception
-	 * @throws ApprovalRequestExpiredException_Exception
-	 * @throws ApprovalRequestExecutionException_Exception
+	 * @throws MalformedURLException 
+	 * @throws NotFoundException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws CertificateException 
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws ApprovalException_Exception 
+	 * @throws HardTokenDoesntExistsException_Exception 
+	 * @throws ApprovalRequestExpiredException_Exception 
+	 * @throws ApprovalRequestExecutionException_Exception  
 	 */
-	public static void main(String[] args) throws MalformedURLException,
+	public static void main(final String[] args) throws MalformedURLException,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			NotFoundException_Exception, CertificateException,

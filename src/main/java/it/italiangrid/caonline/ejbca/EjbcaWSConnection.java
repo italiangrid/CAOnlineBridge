@@ -21,25 +21,41 @@ import org.ejbca.core.protocol.ws.client.gen.EjbcaWSService;
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 public class EjbcaWSConnection {
-	/**
-	 * Logger attribute
+	/** 
+	 * Logger attribute.
 	 */
 	private static final Logger log = Logger.getLogger(EjbcaWSConnection.class);
 
 	/**
-	 * The configuration options
+	 * The configuration options.
 	 */
 	private String ejbcaWsdlUrl;
+	
+	/**
+	 * RA certificate path.
+	 */
 	private String raCertPath;
+	
+	/**
+	 * RA certificate password.
+	 */
 	private String raCertPasswd;
+	
+	/**
+	 * Trust Store path.
+	 */
 	private String trustStorePath;
+	
+	/**
+	 * Trust Store password.
+	 */
 	private String trustStorePasswd;
 
 	/**
 	 * Constructor: search a configuration file for load the connection
 	 * parameters.
 	 * 
-	 * @throws IOException
+	 * @throws IOException 
 	 */
 	public EjbcaWSConnection() throws IOException {
 		String contextPath = EjbcaWSConnection.class.getClassLoader()
@@ -69,10 +85,10 @@ public class EjbcaWSConnection {
 	 * Method that instantiate the Web service connection and return the
 	 * specific service object.
 	 * 
-	 * @return
-	 * @throws MalformedURLException
+	 * @return the ejbca web service.
+	 * @throws MalformedURLException 
 	 */
-	public EjbcaWS getEjbcaWS() throws MalformedURLException {
+	public final EjbcaWS getEjbcaWS() throws MalformedURLException {
 
 		Security.addProvider(new BouncyCastleProvider());
 

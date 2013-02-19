@@ -25,40 +25,64 @@ import org.ejbca.core.protocol.ws.client.gen.WaitingForApprovalException_Excepti
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 public class EjbCACertificateRequest {
-	
-	Logger log = Logger.getLogger(EjbCACertificateRequest.class);
-	
+
+	/**
+	 * Logger attribute.
+	 */
+	private static final Logger log = Logger.getLogger(EjbCACertificateRequest.class);
+
+	/**
+	 * Certificate mail.
+	 */
 	private String mail;
+
+	/**
+	 * Ejbca username.
+	 */
 	private String username;
+
+	/**
+	 * Certificate dn.
+	 */
 	private String dn;
+
+	/**
+	 * Ejbca Web Service.
+	 */
 	protected EjbcaWS service = null;
+
+	/**
+	 * Ejbca user.
+	 */
 	protected UserDataVOWS user = null;
 
 	/**
-	 * Setter method
+	 * Setter method.
 	 * 
 	 * @param mail
+	 *            - the mail.
 	 */
-
-	public void setMail(String mail) {
+	public final void setMail(final String mail) {
 		this.mail = mail;
 	}
 
 	/**
-	 * Setter method
+	 * Setter method.
 	 * 
 	 * @param username
+	 *            - the username.
 	 */
-	public void setUsername(String username) {
+	public final void setUsername(final String username) {
 		this.username = username;
 	}
 
 	/**
-	 * Setter method
+	 * Setter method.
 	 * 
 	 * @param dn
+	 *            - the distinguish name.
 	 */
-	public void setDn(String dn) {
+	public final void setDn(final String dn) {
 		this.dn = dn;
 	}
 
@@ -73,7 +97,8 @@ public class EjbCACertificateRequest {
 	 * @param dn
 	 *            - The certificate DN.
 	 */
-	public EjbCACertificateRequest(String mail, String username, String dn) {
+	public EjbCACertificateRequest(final String mail, final String username,
+			final String dn) {
 		super();
 		this.mail = mail;
 		this.username = username;
@@ -93,20 +118,18 @@ public class EjbCACertificateRequest {
 	 * Constructor: create the certificate DN and instantiate the class getting
 	 * the information from the CertificateRequest model class.
 	 * 
-	 * @param mail
-	 * @param username
-	 * @param dn
+	 * @param certificateRequest - the certificate request
 	 */
-	public EjbCACertificateRequest(CertificateRequest certificateRequest) {
+	public EjbCACertificateRequest(final CertificateRequest certificateRequest) {
 		super();
 
-		String dn = "CN=" + certificateRequest.getCn();
-		
-		dn += ", OU=Personal Certificate, O=IGI PKI, DC=IGI ,DC=IT";
+		String newDn = "CN=" + certificateRequest.getCn();
+
+		newDn += ", OU=Personal Certificate, O=IGI PKI, DC=IGI ,DC=IT";
 
 		this.mail = certificateRequest.getMail();
 		this.username = certificateRequest.getCn().trim();
-		this.dn = dn;
+		this.dn = newDn;
 
 		try {
 			EjbcaWSConnection ejbcaWsConn = new EjbcaWSConnection();
@@ -122,15 +145,15 @@ public class EjbCACertificateRequest {
 	 * Method that use the EjbCAWS service for adding a new user if dosn't
 	 * exists into EjbCA.
 	 * 
-	 * @throws ApprovalException_Exception
-	 * @throws AuthorizationDeniedException_Exception
-	 * @throws CADoesntExistsException_Exception
-	 * @throws EjbcaException_Exception
-	 * @throws UserDoesntFullfillEndEntityProfile_Exception
-	 * @throws WaitingForApprovalException_Exception
-	 * @throws IllegalQueryException_Exception
+	 * @throws ApprovalException_Exception 
+	 * @throws AuthorizationDeniedException_Exception 
+	 * @throws CADoesntExistsException_Exception 
+	 * @throws EjbcaException_Exception 
+	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
+	 * @throws WaitingForApprovalException_Exception 
+	 * @throws IllegalQueryException_Exception 
 	 */
-	protected void createEjbcaUser() throws ApprovalException_Exception,
+	protected final void createEjbcaUser() throws ApprovalException_Exception,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
@@ -141,28 +164,28 @@ public class EjbCACertificateRequest {
 				UserMatch.MATCH_TYPE_EQUALS, username);
 
 		List<UserDataVOWS> findUsers = service.findUser(userMatch);
-		
+
 		log.error("mail = " + mail);
 
 		if (findUsers.size() == 0) {
 			user = new UserDataVOWS();
 			user.setUsername(username);
-			
+
 			log.error(dn);
-			
+
 			user.setSubjectDN(dn);
 			user.setCaName("IGI CA online");
 			user.setEmail(null);
-			user.setSubjectAltName("RFC822NAME="+mail);
+			user.setSubjectAltName("RFC822NAME=" + mail);
 			user.setEndEntityProfileName("IGI CA online enduser");
 			user.setCertificateProfileName("IGI CA online user profile");
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
 			user.setStatus(UserDataVOWS.STATUS_NEW);
 			user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
-			
+
 			log.error(user.toString());
-			
+
 			service.editUser(user);
 		} else {
 			user = new UserDataVOWS();

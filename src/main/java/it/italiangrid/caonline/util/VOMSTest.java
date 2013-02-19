@@ -18,14 +18,21 @@ import org.glite.security.voms.service.admin.VOMSAdmin;
 import org.glite.security.voms.service.admin.VOMSAdminServiceLocator;
 
 /**
- * Test class for the VOMSAdmin web service
+ * Test class for the VOMSAdmin web service.
  * 
  * @author dmichelotto - diego.michelotto@cnaf.infn.it
  */
 
-public class VOMSTest {
+public final class VOMSTest {
+	
 	/**
-	 * Logger
+	 * Contructor.
+	 */
+	private VOMSTest() {
+		
+	}
+	/**
+	 * Logger.
 	 */
 	private static final Logger log = Logger.getLogger(VOMSTest.class);
 
@@ -33,26 +40,29 @@ public class VOMSTest {
 	 * Default configuration if the configuration file dosn't exist.
 	 */
 	private static final String DEFAULT_SSL_CERT_FILE = "/etc/grid-security/hostcert.pem";
+
+	/**
+	 * Default configuration if the configuration file dosn't exist.
+	 */
 	private static final String DEFAULT_SSL_KEY = "/etc/grid-security/hostkey.pem";
 
 	/**
 	 * Main function for local test.
 	 * 
-	 * @param args
-	 * @throws VOMSException
-	 * @throws MalformedURLException
-	 * @throws RemoteException
-	 * @throws ServiceException
+	 * @param args 
+	 * @throws MalformedURLException 
+	 * @throws RemoteException 
+	 * @throws ServiceException 
 	 */
-	public static void main(String[] args) throws VOMSException,
-			MalformedURLException, RemoteException, ServiceException {
+	public static void main(final String[] args) throws MalformedURLException,
+			RemoteException, ServiceException {
 
 		test();
 
 	}
 
 	/**
-	 * Test class
+	 * Test class.
 	 */
 	public static void test() {
 		try {
