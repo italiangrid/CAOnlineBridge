@@ -1,6 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
 <c:url var="saveUrl" value="/certReq/certReq" />
+
 <form:form modelAttribute="certificateRequest" method="POST"
 	action="${saveUrl }">
 <form:errors path="*" cssClass="errorblock" element="div" />
@@ -67,5 +69,8 @@
 	</div>
 	<div id="reset"></div>
 	</div>
+	<p>
+	<form:checkbox path="conditionTerm" />
+	<form:label path="conditionTerm">I have read and I accept the <a href="#">Condition Term of Use</a>.</form:label></p>
 	<input type="submit" value="Get Certificate" onclick="loading();"/>
 </form:form>

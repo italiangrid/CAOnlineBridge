@@ -138,7 +138,9 @@
 	
 	<input type="hidden" id="spkac" name="spkac" value=""/>
 	
-	
+	<p>
+	<form:checkbox path="conditionTerm" />
+	<form:label path="conditionTerm">I have read and I accept the <a href="#">Condition Term of Use</a>.</form:label></p>
 	<input type="submit" value="Get Certificate" onclick="loading();"/>
 </form:form>
 

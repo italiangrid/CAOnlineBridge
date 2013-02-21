@@ -78,7 +78,11 @@
 							<form:hidden path="cn" />
 							<form:hidden path="o" />
 							<form:hidden path="l" />
+							
 							<br/>
+							<p>
+							<form:checkbox path="conditionTerm" />
+							<form:label path="conditionTerm">I have read and I accept the <a href="#">Condition Term of Use</a>.</form:label></p>
 							<input class="buttonCA" type="submit" value="Get Credentials"  onclick="loading();"/>
 						</div>
 

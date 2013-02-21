@@ -1,5 +1,6 @@
 package it.italiangrid.caonline.model;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -41,11 +42,17 @@ public class CertificateRequest {
 	 */
 	@Size(min = 6, max = 10)
 	private String proxyPass1;
-	
+
 	/**
 	 * User's retyped password.
 	 */
 	private String proxyPass2;
+
+	/**
+	 * Condition term readed;
+	 */
+	@AssertTrue(message = "Please read and accept the condition term of use.")
+	private boolean conditionTerm;
 
 	/**
 	 * Constructor.
@@ -218,6 +225,21 @@ public class CertificateRequest {
 	}
 
 	/**
+	 * @return the conditionTerm
+	 */
+	public boolean isConditionTerm() {
+		return conditionTerm;
+	}
+
+	/**
+	 * @param conditionTerm
+	 *            the conditionTerm to set
+	 */
+	public void setConditionTerm(boolean conditionTerm) {
+		this.conditionTerm = conditionTerm;
+	}
+
+	/**
 	 * toString overwrited method.
 	 * 
 	 * @return The certificate request.
@@ -226,8 +248,9 @@ public class CertificateRequest {
 	public final String toString() {
 		return "CN =       " + this.cn + "\n" + "O =        " + this.o + "\n"
 				+ "L =        " + this.l + "\n" + "Mail =     " + this.mail
-				+ "\n" + "ProxyPass1 " + this.proxyPass1 + "\n" + "ProxyPass2 "
-				+ this.proxyPass2 + "\n";
+				+ "\n" + "ProxyPass1 = " + this.proxyPass1 + "\n"
+				+ "ProxyPass2 = " + this.proxyPass2 + "\n"
+				+ "Condition Term of Use = " + this.conditionTerm + "\n";
 	}
 
 }

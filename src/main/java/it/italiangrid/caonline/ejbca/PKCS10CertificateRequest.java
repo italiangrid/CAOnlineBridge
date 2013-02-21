@@ -84,6 +84,19 @@ public class PKCS10CertificateRequest extends EjbCACertificateRequest {
 
 		case UserDataVOWS.STATUS_GENERATED:
 			throw new EjbCAException("Certificate already generated");
+			/*user.setStatus(UserDataVOWS.STATUS_NEW);
+			service.editUser(user);
+			CertificateResponse certenv2 = service.pkcs10Request(
+					user.getUsername(), user.getPassword(), pkcs10, null,
+					CertificateHelper.RESPONSETYPE_CERTIFICATE);
+
+			if (certenv2 == null) {
+				throw new EjbCAException("Certificate not created");
+			}
+
+			X509Certificate cert2 = certenv2.getCertificate();
+
+			return cert2;*/
 
 		default:
 			throw new EjbCAException("User Problem");

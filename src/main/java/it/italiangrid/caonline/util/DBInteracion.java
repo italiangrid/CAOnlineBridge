@@ -116,6 +116,39 @@ public class DBInteracion {
 		
 		return null;
 	}
+	
+	/**
+	 * Method for insert certificate information of the user's certificate into
+	 * portal DB.
+	 * 
+	 * @param credential
+	 *            - User's certificate
+	 * @param mail
+	 *            - User's e-mail for identification.
+	 * @return return the username associated to the certificate in the portal
+	 *         DB
+	 */
+	public final String updateCertificate(final GlobusCredential credential,
+			final String mail) {
+
+		java.security.cert.X509Certificate[] certs = credential
+				.getCertificateChain();
+
+		java.security.cert.X509Certificate cert = certs[0];
+
+		Certificate certificate = certificateService.findBySubject(DNHandler.getSubject(
+					cert).getX500());
+		
+		certificate.setExpirationDate(cert.getNotAfter());
+		
+		int id = certificateService.save(certificate);
+
+		if (id != -1) {
+			return certificateService.findByIdCert(id).getUsernameCert();
+		}
+		
+		return null;
+	}
 
 	/**
 	 * Method that activate user into the portal for using the grid.
@@ -158,6 +191,18 @@ public class DBInteracion {
 		if (utvo.size() == 1) {
 			userToVoService.setDefault(userInfo.getUserId(), vo.getIdVo());
 		}
+	}
+
+	public Certificate getCertificate(String mail) {
+		UserInfo userInfo = userInfoService.findByMail(mail);
+		log.error(userInfo.getUserId());
+		Certificate cert = certificateService.findById(userInfo.getUserId()).get(0);
+		return cert;
+	}
+
+	public void deleteCert(String subjectDN) {
+		certificateService.delete(certificateService.findBySubject(subjectDN));
+		
 	}
 
 }

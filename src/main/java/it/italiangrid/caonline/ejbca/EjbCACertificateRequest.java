@@ -162,7 +162,7 @@ public class EjbCACertificateRequest {
 
 		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME,
 				UserMatch.MATCH_TYPE_EQUALS, username);
-
+		
 		List<UserDataVOWS> findUsers = service.findUser(userMatch);
 
 		log.error("mail = " + mail);
@@ -183,8 +183,6 @@ public class EjbCACertificateRequest {
 			user.setClearPwd(false);
 			user.setStatus(UserDataVOWS.STATUS_NEW);
 			user.setTokenType(UserDataVOWS.TOKEN_TYPE_USERGENERATED);
-
-			log.error(user.toString());
 
 			service.editUser(user);
 		} else {
