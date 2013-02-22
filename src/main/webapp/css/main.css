@@ -39,9 +39,10 @@
 #rightMenu{
 	float: right;
 	text-align: right;
-	
-	padding: 5px;
-	margin-top: 10px;
+}
+
+#rightMenu h2{
+	margin-bottom: 29px;
 }
 
 #rightMenu li{
@@ -184,3 +185,43 @@
 	-moz-border-radius:30px 0;
 }
 
+.someClass {
+    word-wrap: break-word;
+}
+
+.cert{
+	display: none;
+	border: black dotted 1px;
+	margin: 5px;
+	padding: 10px;
+}
+
+.cert:hover{
+	cursor: pointer;
+}
+
+.infoCert p{
+	padding-left: 10px;
+}
+
+.link{
+	text-align: right;
+	font-size: 14px;
+}
+
+.profile{
+	padding: 10px;
+	border: #666565 solid 1px;
+	color: white;
+	background-color: #bb2209;
+	border-radius: 5px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+#help{
+	background-color: #e4e4e4;
+	border: 1px solid #c1c1c1;
+	border-radius: 5px;
+	padding: 10px;
+}

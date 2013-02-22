@@ -6,9 +6,9 @@
 <form:form modelAttribute="certificateRequest" method="POST"
 	action="${saveUrl }">
 <form:errors path="*" cssClass="errorblock" element="div" />
-	<strong>Personal Informations:</strong>
 	<div id="reset"></div>
 	<div id="personalInfo">
+		<div class="profile">Personal Information:</div>
 		<table>
 			<tr>
 				<td><form:label path="mail">Mail: ${certificateRequest.mail }</form:label></td>
@@ -69,6 +69,9 @@
 	</div>
 	<div id="reset"></div>
 	</div>
+	
+	<form:hidden path="persistentId" />
+	<form:hidden path="fromPortal" />
 	<p>
 	<form:checkbox path="conditionTerm" />
 	<form:label path="conditionTerm">I have read and I accept the <a href="#">Condition Term of Use</a>.</form:label></p>

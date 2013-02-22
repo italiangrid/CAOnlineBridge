@@ -2,7 +2,12 @@ package it.italiangrid.caonline.ejbca;
 
 import it.italiangrid.caonline.model.RevokeRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -10,6 +15,7 @@ import org.ejbca.core.protocol.ws.client.gen.AlreadyRevokedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.Certificate;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaWS;
 import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
@@ -66,13 +72,14 @@ public class EjbCARevokeRequest {
 	 * @throws WaitingForApprovalException_Exception 
 	 * @throws IllegalQueryException_Exception 
 	 * @throws EjbCAException 
+	 * @throws CertificateException 
 	 */
 	public void revoke(RevokeRequest revokeRequest)
 			throws AlreadyRevokedException_Exception,
 			ApprovalException_Exception,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
-			NotFoundException_Exception, WaitingForApprovalException_Exception, IllegalQueryException_Exception, EjbCAException {
+			NotFoundException_Exception, WaitingForApprovalException_Exception, IllegalQueryException_Exception, EjbCAException, CertificateException {
 		log.error("Revoking certificate: " + revokeRequest.getSubjectDN());
 		String username = "";
 		if(revokeRequest.getSubjectDN().contains(","))
@@ -81,19 +88,19 @@ public class EjbCARevokeRequest {
 			String[] splittedDN = revokeRequest.getSubjectDN().split("/");
 			username = splittedDN[splittedDN.length-1].replace("CN=", "");
 		}
-		
+		if(revokeRequest.isPortalRequest()){
+			username += " Portal";
+		}
 		log.error(username);
 		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME,
 				UserMatch.MATCH_TYPE_EQUALS, username);
 		
 		List<UserDataVOWS> findUsers = service.findUser(userMatch);
 		
-		if(findUsers.isEmpty())
+		if(findUsers.isEmpty()){
 			throw new EjbCAException("Certificate not found");
-		
+		}
 		service.revokeUser(findUsers.get(0).getUsername(), revokeRequest.getReason(), true);
-		
-		
 		
 		log.error("Certificate successfully revoked");
 	}

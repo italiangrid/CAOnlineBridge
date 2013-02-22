@@ -53,6 +53,16 @@ public class CertificateRequest {
 	 */
 	@AssertTrue(message = "Please read and accept the condition term of use.")
 	private boolean conditionTerm;
+	
+	/**
+	 * User persisteId
+	 */
+	private String persistentId;
+	
+	/**
+	 * Request come from portal or web
+	 */
+	private boolean fromPortal;
 
 	/**
 	 * Constructor.
@@ -84,30 +94,29 @@ public class CertificateRequest {
 	}
 
 	/**
-	 * Constructor.
-	 * 
 	 * @param mail
-	 *            - User's e-mail
-	 * @param cn
-	 *            - User's Canonical Name
 	 * @param l
-	 *            - User's Locality attribute
 	 * @param o
-	 *            - User's Organization attribute
+	 * @param cn
 	 * @param proxyPass1
-	 *            - User's password
 	 * @param proxyPass2
-	 *            - User's retyped password
+	 * @param conditionTerm
+	 * @param persistentId
+	 * @param fromPortal
 	 */
-	public CertificateRequest(final String mail, final String cn,
-			final String l, final String o, final String proxyPass1,
-			final String proxyPass2) {
+	public CertificateRequest(String mail, String l, String o, String cn,
+			String proxyPass1, String proxyPass2, boolean conditionTerm,
+			String persistentId, boolean fromPortal) {
+		super();
 		this.mail = mail;
-		this.cn = cn;
 		this.l = l;
 		this.o = o;
+		this.cn = cn;
 		this.proxyPass1 = proxyPass1;
 		this.proxyPass2 = proxyPass2;
+		this.conditionTerm = conditionTerm;
+		this.persistentId = persistentId;
+		this.fromPortal = fromPortal;
 	}
 
 	/**
@@ -240,17 +249,43 @@ public class CertificateRequest {
 	}
 
 	/**
-	 * toString overwrited method.
-	 * 
-	 * @return The certificate request.
+	 * @return the persistentId
+	 */
+	public String getPersistentId() {
+		return persistentId;
+	}
+
+	/**
+	 * @param persistentId the persistentId to set
+	 */
+	public void setPersistentId(String persistentId) {
+		this.persistentId = persistentId;
+	}
+
+	/**
+	 * @return the fromPortal
+	 */
+	public boolean isFromPortal() {
+		return fromPortal;
+	}
+
+	/**
+	 * @param fromPortal the fromPortal to set
+	 */
+	public void setFromPortal(boolean fromPortal) {
+		this.fromPortal = fromPortal;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public final String toString() {
-		return "CN =       " + this.cn + "\n" + "O =        " + this.o + "\n"
-				+ "L =        " + this.l + "\n" + "Mail =     " + this.mail
-				+ "\n" + "ProxyPass1 = " + this.proxyPass1 + "\n"
-				+ "ProxyPass2 = " + this.proxyPass2 + "\n"
-				+ "Condition Term of Use = " + this.conditionTerm + "\n";
+	public String toString() {
+		return "CertificateRequest [mail=" + mail + ", l=" + l + ", o=" + o
+				+ ", cn=" + cn + ", proxyPass1=" + proxyPass1 + ", proxyPass2="
+				+ proxyPass2 + ", conditionTerm=" + conditionTerm
+				+ ", persistentId=" + persistentId + ", fromPortal="
+				+ fromPortal + "]";
 	}
 
 }

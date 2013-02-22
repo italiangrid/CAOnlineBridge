@@ -78,6 +78,8 @@
 							<form:hidden path="cn" />
 							<form:hidden path="o" />
 							<form:hidden path="l" />
+							<form:hidden path="persistentId" />
+							<form:hidden path="fromPortal" />
 							
 							<br/>
 							<p>

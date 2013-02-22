@@ -66,21 +66,22 @@
 	<div id="page">
 		<%@ include file="/WEB-INF/jsp/header.jsp"%>
 		<div id="content">
-			<h2>Request Certificate</h2>
+			
 
 			<div id="content">
-				<div id="contentLeft">
-					<div id="personalInfo" style="width: 515px">
-						<h3>
-							<strong>SUCCESS</strong>
-						</h3>
-						Certificate DN:<br/><strong> ${dn }</strong>
-						
-						<br/><br/>
-						<pre>${cert }</pre>
-						
-					</div>
+				<h2>Request Certificate</h2>
+				<div id="personalInfo">
+					
+					
+					<div class="profile">SUCCESS</div>
+					<br/>
+					Certificate DN:<br/><strong> ${dn }</strong>
+					
+					<br/><br/>
+					<pre>${cert }</pre>
+					
 				</div>
+				
 			</div>
 		</div>
 		<%@ include file="/WEB-INF/jsp/rightMenu.jsp"%>

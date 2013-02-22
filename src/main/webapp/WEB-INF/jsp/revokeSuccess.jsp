@@ -17,21 +17,17 @@
 			<%@ include file="/WEB-INF/jsp/header.jsp"%>
 		</c:if>
 		<div id="content">
+			<h2>Revoke Certificate</h2>
 			
-
-			<div id="content">
-				<div id="contentLeft2">
-					<div id="personalInfo2">
-						<h3>
-							<strong>SUCCESS</strong>
-						</h3>
-						<p>
-						Your certificate successfully revoked.</p>
-						<c:if test="${revokeRequest.portalRequest==true }">
-							<p> Close this pop up window.</p>
-						</c:if>
-					</div>
-				</div>
+			<div id="personalInfo">
+				
+				<div class="profile">SUCCESS</div>
+				<p>
+				Your certificate successfully revoked.</p>
+				<c:if test="${revokeRequest.portalRequest==true }">
+					<p> Close this pop up window.</p>
+				</c:if>
+			
 			</div>
 		</div>
 		<c:if test="${revokeRequest.portalRequest==false }">

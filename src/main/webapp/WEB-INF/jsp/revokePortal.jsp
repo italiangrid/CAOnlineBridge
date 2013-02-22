@@ -22,7 +22,7 @@
 		
 		<div id="content">
 			<h2>Revoke Certificate</h2>
-			<c:url var="revokeUrl" value="/Revoke/certRevoke" />
+			<c:url var="revokeUrl" value="/RevokePortal/certRevoke" />
 			<form:form modelAttribute="revokeRequest" method="POST"
 				action="${revokeUrl }">
 				<form:errors path="*" cssClass="errorblock" element="div" />

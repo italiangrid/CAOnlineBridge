@@ -49,9 +49,10 @@
 		
 		<div id="content">
 			<h2>Renew Certificate</h2>
+			
 			<div id="reset"></div>
 			<div id="personalInfo">
-			<div class="profile">Certificate Information:</div>
+				<div class="profile">Certificate Information:</div>
 				<table>
 					<tr>
 						<td><strong>Subject DN:</strong><br/> ${revokeRequest.subjectDN }</td>
@@ -150,14 +151,14 @@
 					
 					 </script>
 					 
-					 <c:url var="saveUrl" value="/Renew/certRenew" />
+					<c:url var="saveUrl" value="/RenewPortal/certRenew" />
 					<form method="POST"
 						action="${saveUrl }">
 						
 					
 						<div id="reset"></div>
 						<div id="personalInfo">
-							<div class="profile">Personal Information:</div>
+						<div class="profile">Personal Information:</div>
 							<table>
 								<tr>
 									<td>Mail: ${certificateRequest.mail }</td>
@@ -272,15 +273,14 @@
 				</c:when>
 				<c:otherwise>
 					
-					<c:url var="saveUrl" value="/Renew/certRenew" />
+					<c:url var="saveUrl" value="/RenewPortal/certRenew" />
 
 					<form method="POST"
 						action="${saveUrl }">
 						
-					
 						<div id="reset"></div>
 						<div id="personalInfo">
-						<div class="profile">Personal Information:</div>
+							<div class="profile">Personal Information:</div>
 							<table>
 								<tr>
 									<td>Mail: ${certificateRequest.mail }</td>
@@ -397,7 +397,7 @@
 				<c:if test="${revokeRequest.portalRequest==true }">
 					<div id="contentLeft2">
 	
-						<c:url var="saveUrl" value="/Renew/certRenew" />
+						<c:url var="saveUrl" value="/RenewPortal/certRenew" />
 						<form method="POST"
 							action="${saveUrl }">
 							

@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import it.italiangrid.caonline.ejbca.EjbCAInformationRequest;
 import it.italiangrid.caonline.ejbca.EjbCARevokeRequest;
 import it.italiangrid.caonline.ejbca.PKCS10CertificateRequest;
 import it.italiangrid.caonline.ejbca.SpkacCertificateRequest;
@@ -118,6 +119,9 @@ public class HomeController {
 	public final String showHome(final HttpServletRequest request,
 			final Model model) {
 		log.debug("Home controller");
+		
+		
+		log.error("persistent-id : "+ request.getHeader("persistent-id").split("!")[2]);
 		if ((request.getParameter("t1") != null)
 				&& (request.getParameter("t2") != null)) {
 
@@ -134,23 +138,32 @@ public class HomeController {
 			log.debug("Created token: " + verifyToken);
 
 			if ((token1.equals(verifyToken)) || (token2.equals(verifyToken))) {
-				model.addAttribute("certificateRequest",
+				model.addAttribute(
+						"certificateRequest",
 						new CertificateRequest(request.getHeader("mail"),
-								request.getHeader("cn"),
-								request.getHeader("l"), request.getHeader("o"),
-								null, null));
+								request.getHeader("l"), request.getHeader("o"), 
+								request.getHeader("cn"), null, null, false, 
+								request.getHeader( "persistent-id").split("!")[2], 
+								true));
+				
+						/*
+						 * CertificateRequest(String mail, String l, String o, String cn,
+			String proxyPass1, String proxyPass2, boolean conditionTerm,
+			String persistentId, boolean fromPortal)
+						 * */
 				return "home";
 			} else {
-				log.error("Intrusion detected from: "
-						+ request.getRemoteAddr());
+				log.error("Intrusion detected from: " + request.getRemoteAddr());
 				return "error";
 			}
 		}
 		model.addAttribute(
 				"certificateRequest",
-				new CertificateRequest(request.getHeader("mail"), request
-						.getHeader("cn"), request.getHeader("l"), request
-						.getHeader("o"), NOPASSWORD, NOPASSWORD));
+				new CertificateRequest(request.getHeader("mail"),
+						request.getHeader("l"), request.getHeader("o"), 
+						request.getHeader("cn"), NOPASSWORD, NOPASSWORD, 
+						false, request.getHeader("persistent-id").split("!")[2],
+						false));
 		return "certReq";
 	}
 
@@ -396,7 +409,17 @@ public class HomeController {
 		}
 
 	}
-
+	
+	@RequestMapping(value = "/RevokePortal")
+	public final String showRevokePortal(final HttpServletRequest request,
+			final Model model) {
+		String result = showRevoke(request, model);
+		if(result.equals("revoke"))
+			return "revokePortal";
+		return result;
+	}
+	
+	
 	@RequestMapping(value = "/Revoke")
 	public final String showRevoke(final HttpServletRequest request,
 			final Model model) {
@@ -452,6 +475,18 @@ public class HomeController {
 		return "revoke";
 	}
 	
+	@RequestMapping(value = "/RevokePortal/certRevoke", method = RequestMethod.POST)
+	public String certRevokePortal(@Valid @ModelAttribute("revokeRequest") final RevokeRequest revokeRequest,
+			final BindingResult result, final Model model,
+			final HttpServletRequest request, 
+			final HttpServletResponse response){
+		
+		String resultPage = certRevoke(revokeRequest, result, model, request, response);
+		if(resultPage.equals("revoke"))
+			return "revokePortal";
+		return resultPage;
+	}
+	
 	@RequestMapping(value = "/Revoke/certRevoke", method = RequestMethod.POST)
 	public String certRevoke(@Valid @ModelAttribute("revokeRequest") final RevokeRequest revokeRequest,
 			final BindingResult result, final Model model,
@@ -487,6 +522,15 @@ public class HomeController {
 		}
 		
 		return "revoke";
+	}
+	
+	@RequestMapping(value = "/RenewPortal")
+	public final String showRenewPortal(final HttpServletRequest request,
+			final Model model) {
+		String result = showRenew(request, model);
+		if(result.equals("renew"))
+			return "renewPortal";
+		return result;
 	}
 	
 	@RequestMapping(value = "/Renew")
@@ -530,9 +574,11 @@ public class HomeController {
 						null, RevokedCertInfo.REVOCATION_REASON_UNSPECIFIED, true, true));
 				model.addAttribute(
 						"certificateRequest",
-						new CertificateRequest(request.getHeader("mail"), request
-								.getHeader("cn"), request.getHeader("l"), request
-								.getHeader("o"), NOPASSWORD, NOPASSWORD));
+						new CertificateRequest(request.getHeader("mail"),
+								request.getHeader("l"), request.getHeader("o"), 
+								request.getHeader("cn"), null, null, false, 
+								request.getHeader( "persistent-id").split("!")[2], 
+								true));
 			} else {
 				log.error("Intrusion detected from: "
 						+ request.getRemoteAddr());
@@ -563,11 +609,26 @@ public class HomeController {
 					true));
 			model.addAttribute(
 					"certificateRequest",
-					new CertificateRequest(request.getHeader("mail"), request
-							.getHeader("cn"), request.getHeader("l"), request
-							.getHeader("o"), NOPASSWORD, NOPASSWORD));
+					new CertificateRequest(request.getHeader("mail"),
+							request.getHeader("l"), request.getHeader("o"), 
+							request.getHeader("cn"), NOPASSWORD, NOPASSWORD, 
+							false, request.getHeader("persistent-id").split("!")[2],
+							false));
 		}
 		return "renew";
+	}
+	
+	@RequestMapping(value = "/RenewPortal/certRenew", method = RequestMethod.POST)
+	public String certRenewPortal(@Valid @ModelAttribute("revokeRequest") final RevokeRequest revokeRequest,
+			@Valid @ModelAttribute("certificateRequest") final CertificateRequest certificateRequest,
+			final BindingResult result, final Model model,
+			final HttpServletRequest request, 
+			final HttpServletResponse response){
+		String resultPage = certRenew(revokeRequest, certificateRequest, result, model, request, response);
+		if(resultPage.equals("renew")){
+			return "renewPage";
+		}
+		return resultPage;
 	}
 	
 	@RequestMapping(value = "/Renew/certRenew", method = RequestMethod.POST)
@@ -722,6 +783,24 @@ public class HomeController {
 		}
 		
 		return "renew";
+	}
+	
+	@RequestMapping(value = "/certificate")
+	public final String showCertificate(final HttpServletRequest request,
+			final Model model) {
+		
+		
+		try{
+			
+			EjbCAInformationRequest info = new EjbCAInformationRequest();
+			model.addAttribute("certList", info.listCertificate(request.getHeader("cn")));
+			
+		} catch (Exception e) {
+			model.addAttribute("errorMessage", e.getMessage());
+			e.printStackTrace();
+		}
+		
+		return "certificate";
 	}
 
 }

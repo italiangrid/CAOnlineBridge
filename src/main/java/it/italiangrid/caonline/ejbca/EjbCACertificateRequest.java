@@ -2,13 +2,19 @@ package it.italiangrid.caonline.ejbca;
 
 import it.italiangrid.caonline.model.CertificateRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.ejbca.core.protocol.ws.client.gen.ApprovalException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.AuthorizationDeniedException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.CADoesntExistsException_Exception;
+import org.ejbca.core.protocol.ws.client.gen.Certificate;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaException_Exception;
 import org.ejbca.core.protocol.ws.client.gen.EjbcaWS;
 import org.ejbca.core.protocol.ws.client.gen.IllegalQueryException_Exception;
@@ -45,6 +51,12 @@ public class EjbCACertificateRequest {
 	 * Certificate dn.
 	 */
 	private String dn;
+	
+	/**
+	 * Request came from portal?.
+	 */
+	private boolean fromPortal;
+	
 
 	/**
 	 * Ejbca Web Service.
@@ -123,14 +135,23 @@ public class EjbCACertificateRequest {
 	public EjbCACertificateRequest(final CertificateRequest certificateRequest) {
 		super();
 
-		String newDn = "CN=" + certificateRequest.getCn();
-
-		newDn += ", OU=Personal Certificate, O=IGI PKI, DC=IGI ,DC=IT";
+		log.error(certificateRequest);
 
 		this.mail = certificateRequest.getMail();
-		this.username = certificateRequest.getCn().trim();
-		this.dn = newDn;
+		this.username = certificateRequest.getCn();
+		this.fromPortal = certificateRequest.isFromPortal();
 
+		String newDn = "CN=" + certificateRequest.getCn();
+		if(this.fromPortal){
+			this.username += " Portal";
+			newDn += ", OU=Portal Certificate";
+		} else {
+			newDn += ", OU=Personal Certificate";
+		}
+		newDn += ", O=IGI PKI, DC=IGI ,DC=IT";
+		
+		this.dn = newDn;
+		
 		try {
 			EjbcaWSConnection ejbcaWsConn = new EjbcaWSConnection();
 			this.service = ejbcaWsConn.getEjbcaWS();
@@ -152,13 +173,14 @@ public class EjbCACertificateRequest {
 	 * @throws UserDoesntFullfillEndEntityProfile_Exception 
 	 * @throws WaitingForApprovalException_Exception 
 	 * @throws IllegalQueryException_Exception 
+	 * @throws CertificateException 
 	 */
 	protected final void createEjbcaUser() throws ApprovalException_Exception,
 			AuthorizationDeniedException_Exception,
 			CADoesntExistsException_Exception, EjbcaException_Exception,
 			UserDoesntFullfillEndEntityProfile_Exception,
 			WaitingForApprovalException_Exception,
-			IllegalQueryException_Exception {
+			IllegalQueryException_Exception, CertificateException {
 
 		UserMatch userMatch = new UserMatch(UserMatch.MATCH_WITH_USERNAME,
 				UserMatch.MATCH_TYPE_EQUALS, username);
@@ -177,8 +199,14 @@ public class EjbCACertificateRequest {
 			user.setCaName("IGI CA online");
 			user.setEmail(null);
 			user.setSubjectAltName("RFC822NAME=" + mail);
-			user.setEndEntityProfileName("IGI CA online enduser");
-			user.setCertificateProfileName("IGI CA online user profile");
+			
+			if(this.fromPortal){
+				user.setEndEntityProfileName("IGI CA online Portal user");
+				user.setCertificateProfileName("IGI CA online Portal profile");
+			} else {
+				user.setEndEntityProfileName("IGI CA online enduser");
+				user.setCertificateProfileName("IGI CA online user profile");
+			}
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
 			user.setStatus(UserDataVOWS.STATUS_NEW);
@@ -190,6 +218,7 @@ public class EjbCACertificateRequest {
 			user = findUsers.get(0);
 			user.setPassword("userTestPasswd");
 			user.setClearPwd(false);
+
 		}
 
 	}

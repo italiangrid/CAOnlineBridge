@@ -50,12 +50,12 @@
 	<div id="page">
 
 		<%@ include file="/WEB-INF/jsp/header.jsp"%>
-		<h2>Request Certificate</h2>
+		
 		<div id="content">
+			<h2>Request Certificate</h2>
 
 
-
-			<div id="contentLeft">
+			
 				<c:set var="browser" value="${header['User-Agent']}" scope="session"/>
 				<c:choose>
 				<c:when test="${fn:contains(header['User-Agent'],'MSIE')}">
@@ -65,7 +65,7 @@
 					<%@ include file="/WEB-INF/jsp/certReqFirefox.jsp"%>
 				</c:otherwise>
 				</c:choose>
-			</div>
+			
 			
 			<div class="errorblock" style="display:none;">
 				Chrome isn't supported for this functionality.<br/>
