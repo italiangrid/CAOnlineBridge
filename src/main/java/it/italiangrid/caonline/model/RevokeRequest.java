@@ -1,7 +1,5 @@
 package it.italiangrid.caonline.model;
 
-import java.math.BigInteger;
-
 import javax.validation.constraints.AssertTrue;
 
 public class RevokeRequest {

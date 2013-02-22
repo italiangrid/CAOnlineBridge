@@ -8,7 +8,6 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 
 import org.ejbca.core.protocol.ws.client.gen.Certificate;
-import org.ejbca.util.Base64;
 
 /**
  * Class the display the information of the user certificate.
