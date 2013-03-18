@@ -121,7 +121,7 @@ public class HomeController {
 		log.debug("Home controller");
 		
 		
-		log.error("persistent-id : "+ request.getHeader("persistent-id").split("!")[2]);
+		//log.error("persistent-id : "+ request.getHeader("persistent-id").split("!")[2]);
 		if ((request.getParameter("t1") != null)
 				&& (request.getParameter("t2") != null)) {
 
